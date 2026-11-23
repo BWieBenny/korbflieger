@@ -1,5 +1,5 @@
-/* Korbflieger – Service Worker: App-Hülle offline, Updates im Hintergrund */
-const CACHE='korbflieger-20261123-212922';
+/* Korbflieger – Service Worker: Seite zuerst aus dem Netz (Updates sofort), sonst aus dem Speicher; übrige Dateien aus dem Speicher */
+const CACHE='korbflieger-20261123-215544';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));
@@ -11,9 +11,16 @@ self.addEventListener('fetch',e=>{
   if(e.request.method!=='GET') return;
   const url=new URL(e.request.url);
   const isShell=url.origin===location.origin;
+  if(e.request.mode==='navigate'){
+    e.respondWith(fetch(e.request).then(res=>{
+      if(res && res.ok){ const copy=res.clone(); caches.open(CACHE).then(c=>c.put(e.request,copy)); }
+      return res;
+    }).catch(()=>caches.match(e.request,{ignoreSearch:true}).then(hit=>hit||caches.match('./index.html'))));
+    return;
+  }
   e.respondWith(caches.match(e.request).then(hit=>{
     const net=fetch(e.request).then(res=>{
-      if(res && res.ok && (isShell || url.hostname.endsWith('gstatic.com') || url.hostname.endsWith('googleapis.com'))){
+      if(res && res.ok && (isShell || url.hostname.endsWith('gstatic.com') || url.hostname.endsWith('googleapis.com') || url.hostname === 'cdnjs.cloudflare.com' || url.hostname === 'cdn.jsdelivr.net')){
         const copy=res.clone(); caches.open(CACHE).then(c=>c.put(e.request,copy));
       }
       return res;

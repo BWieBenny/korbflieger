@@ -35,9 +35,10 @@ body{
 :root{
   --ink:#1c1233; --night:#2a1a4f; --chalk:#fff6ea; --muted:#cbbfdc;
   --lime:#c8f560; --lime-deep:#7fa82a; --ember:#ff9f43; --ember-deep:#c76a1c; --gold:#ffd166;
-  --panel:rgba(24,15,45,.9); --line:rgba(255,246,234,.18); --glass:rgba(28,18,51,.45); --track:rgba(255,246,234,.1);
+  --panel:rgba(24,15,45,.92); --line:rgba(255,246,234,.18); --glass:rgba(28,18,51,.45); --track:rgba(255,246,234,.1);
   --font-display:"Bungee","Figtree",system-ui,sans-serif;
   --font-body:"Figtree",system-ui,sans-serif;
+  --font-mono:ui-monospace,Menlo,Consolas,monospace;
   color-scheme:dark;
 }
 html,body{height:100%}
@@ -96,6 +97,7 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
 }
 .ps i{width:calc(8px*var(--s)); height:calc(8px*var(--s)); border-radius:50%; background:var(--c)}
 .ps.out{opacity:.4}
+.ps.me{box-shadow:0 0 0 calc(2px*var(--s)) var(--chalk)}
 .starcount{
   font-weight:800; font-size:calc(15px*var(--s)); font-variant-numeric:tabular-nums;
   padding:calc(5px*var(--s)) calc(10px*var(--s)); border-radius:99px; background:var(--glass); border:1px solid var(--line);
@@ -108,6 +110,9 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
   padding:calc(62px*var(--s)) calc(16px*var(--s)) calc(20px*var(--s)); text-align:center; pointer-events:none; box-sizing:border-box;
 }
 .overlay .card,.overlay button{pointer-events:auto}
+#pOnline{justify-content:center; padding-top:calc(56px*var(--s))}
+#pOnline .card{max-height:100%; overflow:auto}
+#pOnline .card > *{flex:none}
 .title{
   font-family:var(--font-display); font-size:calc(44px*var(--s)); line-height:.92; margin:0;
   letter-spacing:.01em; text-shadow:0 calc(4px*var(--s)) 0 rgba(0,0,0,.3);
@@ -122,6 +127,7 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
 }
 .sect{font-family:var(--font-display); font-size:calc(11px*var(--s)); letter-spacing:.06em; color:var(--lime); text-align:left; margin:0}
 .info{margin:0; text-align:left; font-size:calc(13.5px*var(--s)); line-height:1.35}
+.info.small{font-size:calc(12px*var(--s)); color:var(--muted)}
 .missions{list-style:none; margin:0; padding:0; display:grid; gap:calc(8px*var(--s)); text-align:left}
 .missions li{display:grid; grid-template-columns:1fr auto; gap:calc(3px*var(--s)) calc(10px*var(--s)); align-items:center}
 .missions .mt{font-size:calc(13.5px*var(--s)); font-weight:700; line-height:1.2; min-width:0}
@@ -136,10 +142,11 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
   font-weight:800; font-size:calc(17px*var(--s)); padding:calc(12px*var(--s)) calc(14px*var(--s));
   border-radius:calc(14px*var(--s)); cursor:pointer; color:var(--chalk); background:transparent; border:1px solid var(--line);
 }
+.btn:disabled{opacity:.45; cursor:default}
 .btn.small{font-size:calc(14.5px*var(--s)); padding:calc(9px*var(--s)) calc(12px*var(--s))}
 .btn.primary{background:var(--lime); color:var(--ink); border-color:transparent; box-shadow:0 calc(4px*var(--s)) 0 var(--lime-deep)}
 .btn.revive{background:var(--ember); color:var(--ink); border-color:transparent; box-shadow:0 calc(4px*var(--s)) 0 var(--ember-deep)}
-.btn.primary:active,.btn.revive:active{transform:translateY(calc(3px*var(--s))); box-shadow:none}
+.btn.primary:active:not(:disabled),.btn.revive:active{transform:translateY(calc(3px*var(--s))); box-shadow:none}
 .btn.count{display:flex; flex-direction:column; align-items:center; gap:calc(2px*var(--s)); font-family:var(--font-display); font-weight:400; font-size:calc(30px*var(--s)); padding:calc(10px*var(--s)) 0}
 .btn.count small{font-family:var(--font-body); font-weight:800; font-size:calc(11px*var(--s)); letter-spacing:.04em}
 .best{font-size:calc(13px*var(--s)); color:var(--muted); font-weight:700}
@@ -168,8 +175,21 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
 .ranking .nm i{display:inline-block; width:calc(10px*var(--s)); height:calc(10px*var(--s)); border-radius:50%; background:var(--c); margin-right:calc(6px*var(--s))}
 .ranking small{display:block; color:var(--muted); font-weight:700; font-size:calc(11.5px*var(--s))}
 .ranking .pt{font-family:var(--font-display); font-size:calc(24px*var(--s)); font-variant-numeric:tabular-nums}
+canvas.qr{width:calc(196px*var(--s)); height:calc(196px*var(--s)); align-self:center; border-radius:calc(10px*var(--s)); background:#fff; image-rendering:pixelated; flex:none}
+.codebox{display:flex; gap:calc(8px*var(--s)); align-items:center}
+.codebox code{
+  flex:1 1 auto; min-width:0; font:600 calc(10px*var(--s))/1.3 var(--font-mono); word-break:break-all; text-align:left;
+  background:rgba(255,246,234,.06); border-radius:calc(8px*var(--s)); padding:calc(6px*var(--s)) calc(8px*var(--s));
+  max-height:calc(42px*var(--s)); overflow:auto; user-select:text; -webkit-user-select:text;
+}
+.codebox .btn{flex:none}
+textarea{
+  font:600 calc(12px*var(--s))/1.3 var(--font-mono); width:100%; box-sizing:border-box; background:rgba(255,246,234,.08); color:var(--chalk);
+  border:1px solid var(--line); border-radius:calc(10px*var(--s)); padding:calc(8px*var(--s)); resize:none; user-select:text; -webkit-user-select:text;
+}
+#scanVideo{width:100%; border-radius:calc(12px*var(--s)); background:#000; aspect-ratio:3/4; object-fit:cover}
 
-/* Shop */
+/* Shop und Scanner */
 .shop{position:absolute; inset:0; background:rgba(12,7,26,.62); display:flex; align-items:center; justify-content:center; padding:calc(14px*var(--s)); box-sizing:border-box}
 .shop .card{max-height:100%; overflow:auto}
 .shophead{display:flex; align-items:center; justify-content:space-between; gap:10px}
@@ -190,9 +210,9 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
   position:absolute; left:50%; top:calc(108px*var(--s)); transform:translateX(-50%);
   background:var(--chalk); color:var(--ink); font-weight:800; font-size:calc(14px*var(--s));
   padding:calc(8px*var(--s)) calc(14px*var(--s)); border-radius:99px; white-space:nowrap; pointer-events:none;
-  box-shadow:0 6px 20px rgba(0,0,0,.35);
+  box-shadow:0 6px 20px rgba(0,0,0,.35); z-index:5;
 }
-#testout{position:absolute; inset:0; margin:0; padding:12px; background:rgba(0,0,0,.85); color:#c8f560; font:12px/1.4 ui-monospace,Consolas,monospace; white-space:pre-wrap; overflow:auto}
+#testout{position:absolute; inset:0; margin:0; padding:12px; background:rgba(0,0,0,.85); color:#c8f560; font:12px/1.4 var(--font-mono); white-space:pre-wrap; overflow:auto}
 @media (prefers-reduced-motion: reduce){ .hint{animation:none} .score.bump{animation:none} }
 </style>
 
@@ -205,8 +225,9 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
         <button class="iconbtn" id="btnPause" type="button" aria-label="Pause" hidden>
           <svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1.5"/><rect x="14" y="4" width="5" height="16" rx="1.5"/></svg>
         </button>
-        <button class="iconbtn" id="btnSound" type="button" aria-label="Ton aus">
-          <svg id="icoOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+        <button class="iconbtn" id="btnSound" type="button" aria-label="Ton: Musik und Effekte">
+          <svg id="icoAll" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9v6h3.5l4.5 3.6V5.4L6.5 9z" fill="currentColor"/><path d="M14.5 9.2a4 4 0 0 1 0 5.6"/><path d="M19 4v9.2"/><circle cx="17.2" cy="14" r="2" fill="currentColor"/><path d="M19 4l3 1.2"/></svg>
+          <svg id="icoFx" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
           <svg id="icoOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>
         </button>
       </div>
@@ -233,7 +254,7 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
           <button class="btn primary" id="btnPlay" type="button">Los</button>
           <button class="btn" id="btnShop" type="button">Bälle</button>
         </div>
-        <button class="btn small" id="btnMulti" type="button">Mehrspieler · 2–4 an einem Gerät</button>
+        <button class="btn small" id="btnMulti" type="button">Mehrspieler · 2–4 Spieler</button>
         <div class="best">Rekord <b id="menuBest">0</b></div>
       </div>
     </section>
@@ -244,14 +265,20 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
         <p class="tag">Alle Bälle im selben Feld.</p>
       </div>
       <div class="card">
-        <p class="info">Der Bildschirm wird in Spalten geteilt. Jeder tippt nur in seine Spalte und steuert damit seinen Ball. Bälle stoßen sich gegenseitig an. Wer einen Korb verpasst oder aufschlägt, ist raus. Am Ende gewinnt, wer die meisten Punkte hat.</p>
+        <p class="sect">An einem Gerät</p>
+        <p class="info">Der Bildschirm wird in Spalten geteilt, jeder tippt in seine Spalte. Bälle stoßen sich an. Wer einen Korb verpasst oder aufschlägt, ist raus. Am Ende zählen die Punkte.</p>
         <div class="row">
           <button class="btn count" type="button" data-n="2" aria-label="2 Spieler">2<small>Spieler</small></button>
           <button class="btn count" type="button" data-n="3" aria-label="3 Spieler">3<small>Spieler</small></button>
           <button class="btn count" type="button" data-n="4" aria-label="4 Spieler">4<small>Spieler</small></button>
         </div>
+        <button class="btn primary" id="btnOnline" type="button">Mehrere Handys · WLAN</button>
         <button class="btn small" id="btnMultiBack" type="button">Zurück</button>
       </div>
+    </section>
+
+    <section class="overlay" id="pOnline" hidden>
+      <div class="card" id="onCard"></div>
     </section>
 
     <section class="overlay" id="pReady" hidden>
@@ -291,6 +318,7 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
       </div>
       <div class="card">
         <ol class="ranking" id="resList"></ol>
+        <p class="info small" id="resWait" hidden>Der Gastgeber kann eine Revanche starten.</p>
         <div class="row">
           <button class="btn primary" id="btnRematch" type="button">Revanche</button>
           <button class="btn" id="btnMenu" type="button">Menü</button>
@@ -321,6 +349,15 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
       </div>
     </section>
 
+    <section class="shop" id="pScan" hidden>
+      <div class="card" role="dialog" aria-label="QR-Code scannen">
+        <div class="shophead"><h2>Code scannen</h2></div>
+        <video id="scanVideo" playsinline muted></video>
+        <p class="info" id="scanInfo">Halte die Kamera auf den QR-Code des anderen Handys.</p>
+        <button class="btn" id="scanCancel" type="button">Abbrechen</button>
+      </div>
+    </section>
+
     <div class="toast" id="toast" hidden></div>
   </div>
 </div>
@@ -332,14 +369,15 @@ button{font-family:var(--font-body); -webkit-tap-highlight-color:transparent}
 /* ---------- Konstanten ---------- */
 const W = 360, H = 600, GROUND = 70, BALLX = 110, R = 14, RIM = 5;
 const GRAV = 1700, FLAP = -520, MAXFALL = 720, START_Y = 250;
-const ZONE_EVERY = 30, REVIVE_COST = 15, COUNTDOWN = 1.5;
+const CEIL = R - 30;               // Decke in Weltkoordinaten, auf jedem Bildschirm gleich (166 über dem höchsten Korb)
+const ZONE_EVERY = 30, REVIVE_COST = 15, COUNTDOWN = 1.5, DISSOLVE = 0.5;
 const PW_TIME = { magnet: 8, zeit: 5 };
 const PCOL = ['#c8f560', '#ff7ad9', '#7fd3ff', '#ffb347'];
 const PCAP = ['#ff5d73', '#ff7ad9', '#5ab8f0', '#ff9f43'];
 const QS = new URLSearchParams(location.search);
 const BOT = QS.has('bot'), SELFTEST = QS.has('selftest');
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-let VIEW_EXTRA = 0; // zusätzlicher Himmel über y=0 bei schmalen, hohen Bildschirmen
+let VIEW_EXTRA = 0; // zusätzliche Bildschirmhöhe gegenüber 360×600 (nur Darstellung)
 
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
 function rng(seed){ let a = seed >>> 0; return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -358,18 +396,19 @@ function newPlayer(i, n){
     gotBanked: 0, swishBanked: 0, shield: false, magnet: 0,
     rot: i * 1.3, prop: i * 0.8, propBoost: 0, sq: 1, sqv: 0, blink: 2.5 + i * 0.7, newBest: false };
 }
-function newGame(seed, extra, n){
+function newGame(seed, n){
   n = n || 1;
-  const g = { seed, rnd: rng(seed), n, t: 0, x: 0, cur: 0, spd: 150, ceil: R - (extra || 0),
-    hoops: [], items: [], spawned: 0, lastX: 0, noSpawn: false, lead: 0, top: 0,
+  const g = { seed, rnd: rng(seed), n, t: 0, x: 0, cur: 0, spd: 150, ceil: CEIL,
+    hoops: [], items: [], spawned: 0, itemSeq: 0, lastX: 0, noSpawn: false, lead: 0, top: 0,
     started: false, count: 0, hold: false, holdY: 0, revived: false, deadT: 0, zeit: 0, bumpCD: 0,
-    shake: 0, flash: 0, parts: [], pops: [], players: [] };
+    online: false, puppet: false, shake: 0, flash: 0, parts: [], pops: [], players: [] };
   for (let i = 0; i < n; i++) g.players.push(newPlayer(i, n));
   while (g.lastX < W + 320) spawnHoop(g);
   return g;
 }
 const bxOf = (g, p) => g.x + p.lane + p.offX;
 const newPS = () => ({ scored: false, skipped: false, touched: false, boardHit: false, prevRel: null });
+const hoopDone = (g, h) => h.ps.every((s, i) => s.scored || !g.players[i].alive);
 
 function spawnHoop(g){
   const n = g.spawned++, r = g.rnd;
@@ -388,7 +427,7 @@ function spawnHoop(g){
   const gold = n >= 8 && n % 9 === 8;
   const board = !gold && n >= 6 && r() < 0.3;
   y0 = clamp(y0, 150 + amp, H - GROUND - 110 - amp);
-  const h = { x0, x: x0, y0, y: y0, hw, amp, w, ph, ax, aw, aph, gold, board, net: 0, flash: 0, wob: 0, n,
+  const h = { x0, x: x0, y0, y: y0, hw, amp, w, ph, ax, aw, aph, gold, board, net: 0, flash: 0, wob: 0, dis: 0, n,
     ps: Array.from({ length: g.n }, newPS) };
   placeHoop(h, g.t);
   g.hoops.push(h);
@@ -396,8 +435,8 @@ function spawnHoop(g){
     const lo = Math.min(prev.y0, y0), hi = Math.max(prev.y0, y0);
     const iy = clamp(lo - 50 + r() * (hi - lo + 60), 90, H - GROUND - 60);
     const roll = r();
-    if (n >= 5 && roll < 0.17) g.items.push({ x: (prev.x0 + x0) / 2, y: iy, kind: ['magnet', 'schild', 'zeit'][Math.floor(r() * 3)], taken: false, ph: r() * 6 });
-    else if (roll < 0.62) g.items.push({ x: (prev.x0 + x0) / 2, y: iy, kind: 'star', taken: false, ph: r() * 6 });
+    if (n >= 5 && roll < 0.17) g.items.push({ id: g.itemSeq++, x: (prev.x0 + x0) / 2, y: iy, kind: ['magnet', 'schild', 'zeit'][Math.floor(r() * 3)], taken: false, ph: r() * 6 });
+    else if (roll < 0.62) g.items.push({ id: g.itemSeq++, x: (prev.x0 + x0) / 2, y: iy, kind: 'star', taken: false, ph: r() * 6 });
   }
   g.lastX = x0;
 }
@@ -423,7 +462,7 @@ function flap(g, p, ev){
   if (!p.alive) return;
   if (!g.started) { if (g.n > 1) return; g.started = true; g.cur = g.spd; }
   g.hold = false;
-  p.vy = FLAP; p.propBoost = 1; p.sq = 1.22;
+  p.vy = FLAP; p.propBoost = 1; p.sq = 1.22; p.lastFlap = g.t;
   emit(g, bxOf(g, p) - 4, p.y + R, 5, 'rgba(255,246,234,.7)', 70, { dir: Math.PI / 2, spread: 1.6, life: .35, size: 3.5, grav: -40, vx: -40 });
   ev('flap', { p });
 }
@@ -452,9 +491,10 @@ function scoreHoop(g, p, h, ev){
   g.lead = Math.max(g.lead, p.hoopsDone);
   g.spd = Math.min(240, 150 + g.lead * 2.4);
   const sub = h.gold ? (g.n === 1 ? '+' + starGain + ' ★' : 'Gold') : s.boardHit ? 'Brett!' : swish ? (p.streak >= 3 ? 'Feuer ×' + p.streak : p.streak >= 2 ? 'Swish ×' + p.streak : 'Swish') : '';
-  g.pops.push({ x: h.x + (g.n > 1 ? p.lane * 1.2 : 0), y: h.y - 26 - (g.n > 1 ? p.i * 8 : 0), text: '+' + pts, sub, t: 0, gold: h.gold, col: g.n > 1 ? PCOL[p.i] : null });
+  const pop = { x: h.x + (g.n > 1 ? p.lane * 1.2 : 0), y: h.y - 26 - (g.n > 1 ? p.i * 8 : 0), text: '+' + pts, sub, t: 0, gold: h.gold, col: g.n > 1 ? PCOL[p.i] : null };
+  g.pops.push(pop);
   emit(g, h.x, h.y, swish ? 16 : 6, h.gold ? '#ffd166' : g.n > 1 ? PCOL[p.i] : swish ? '#fff6ea' : 'rgba(255,246,234,.6)', swish ? 170 : 90, { life: .55, size: 3 });
-  ev('score', { p, pts, swish, streak: p.streak, gold: h.gold, board: s.boardHit });
+  ev('score', { p, pts, swish, streak: p.streak, gold: h.gold, board: s.boardHit, n: h.n, pop });
   const z = Math.floor(g.top / ZONE_EVERY);
   if (z !== oldZone) ev('zone', { zone: z });
 }
@@ -526,6 +566,17 @@ function collidePlayers(g, ev){
   }
 }
 
+/* Korb löst sich auf: Funken entlang des Rings */
+function dissolve(g, h){
+  h.dis = 0.001;
+  const col = h.gold ? '#ffd166' : '#fff6ea';
+  for (let k = 0; k < 16; k++) {
+    const a = k / 16 * Math.PI * 2;
+    emit(g, h.x + Math.cos(a) * h.hw, h.y + Math.sin(a) * h.hw * 0.3, 1, col, 70, { dir: a, spread: 0.4, life: .55, size: 2.6, grav: 60 });
+  }
+}
+
+/* g.puppet: Gast im Online-Spiel. Er rechnet Bewegung und Stöße selbst, Treffer, Ausscheiden und Extras entscheidet der Gastgeber. */
 function step(g, rdt, ev){
   g.zeit = Math.max(0, g.zeit - rdt);
   for (const p of g.players) p.magnet = Math.max(0, p.magnet - rdt);
@@ -551,11 +602,15 @@ function step(g, rdt, ev){
     h.net = Math.max(0, h.net - dt * 2.4);
     h.flash = Math.max(0, h.flash - dt * 2);
     h.wob = Math.max(0, h.wob - dt * 3);
+    if (h.dis > 0) h.dis = Math.min(1, h.dis + dt / DISSOLVE);
   }
 
   if (g.count > 0) {
     g.count -= rdt;
-    if (g.count <= 0) { g.count = 0; g.started = true; g.cur = g.spd; for (const p of g.players) flap(g, p, ev); ev('go', {}); }
+    if (g.count <= 0) {
+      g.count = 0;
+      if (!g.puppet) { g.started = true; g.cur = g.spd; for (const p of g.players) flap(g, p, ev); ev('go', {}); }
+    }
   }
   if (!g.started || g.hold) {
     for (const p of g.players) { p.y = (g.hold ? g.holdY : START_Y) + Math.sin(g.t * 2.6 + p.i * 1.7) * 7; p.rot += dt * 0.6; }
@@ -582,7 +637,7 @@ function step(g, rdt, ev){
     for (const p of g.players) {
       if (!p.alive && g.n > 1) continue;
       const s = h.ps[p.i];
-      if (Math.abs(bxOf(g, p) - h.x) < h.hw + R + RIM + 20) {
+      if (h.dis === 0 && Math.abs(bxOf(g, p) - h.x) < h.hw + R + RIM + 20) {
         for (const side of [-1, 1]) {
           if (bounce(g, p, h, h.x + side * h.hw, h.y, RIM, ev, 'rim') && p.alive && !s.scored) s.touched = true;
         }
@@ -592,25 +647,27 @@ function step(g, rdt, ev){
         }
       }
       const rel = p.y - h.y;
-      if (p.alive && !s.scored && s.prevRel !== null && s.prevRel < 0 && rel >= 0 && Math.abs(bxOf(g, p) - h.x) < h.hw) scoreHoop(g, p, h, ev);
+      if (!g.puppet && p.alive && !s.scored && s.prevRel !== null && s.prevRel < 0 && rel >= 0 && Math.abs(bxOf(g, p) - h.x) < h.hw) scoreHoop(g, p, h, ev);
       s.prevRel = rel;
-      if (p.alive && !s.scored && bxOf(g, p) - R > h.x + h.hw + RIM) die(g, p, 'miss', ev, h);
+      if (!g.puppet && p.alive && !s.scored && bxOf(g, p) - R > h.x + h.hw + RIM) die(g, p, 'miss', ev, h);
     }
+    if (h.dis === 0 && h.ps.some(s => s.scored) && hoopDone(g, h)) dissolve(g, h);
   }
 
   const gy = H - GROUND;
   for (const p of g.players) {
     if (p.y + R > gy) {
       p.y = gy - R;
-      if (p.alive) die(g, p, 'ground', ev);
+      if (p.alive && !g.puppet) die(g, p, 'ground', ev);
       if (!p.alive) { p.vy = -Math.abs(p.vy) * 0.35; if (Math.abs(p.vy) < 70) p.vy = 0; }
+      else if (g.puppet && p.vy > 0) p.vy = 0;
     }
   }
 
   for (const p of g.players) {
     if (!p.alive) { p.deadT += dt; continue; }
     const bx = bxOf(g, p);
-    for (const s of g.items) {
+    if (!g.puppet) for (const s of g.items) {
       if (s.taken) continue;
       if (p.magnet > 0 && s.kind === 'star') {
         const dx = bx - s.x, dy = p.y - s.y, d = Math.hypot(dx, dy);
@@ -621,12 +678,12 @@ function step(g, rdt, ev){
         if (s.kind === 'star') {
           p.got++;
           if (g.n > 1) { p.score++; g.top = Math.max(g.top, p.score); g.pops.push({ x: s.x, y: s.y - 18, text: '+1', sub: '', t: 0, col: PCOL[p.i] }); }
-          emit(g, s.x, s.y, 10, '#ffd166', 130, { life: .5, size: 3 }); ev('star', { p });
+          emit(g, s.x, s.y, 10, '#ffd166', 130, { life: .5, size: 3 }); ev('star', { p, id: s.id });
         } else {
           p.itemsGot++;
           if (s.kind === 'schild') p.shield = true; else if (s.kind === 'magnet') p.magnet = PW_TIME.magnet; else g.zeit = PW_TIME.zeit;
           emit(g, s.x, s.y, 14, '#7fd3ff', 150, { life: .5, size: 3 });
-          ev('item', { p, kind: s.kind });
+          ev('item', { p, kind: s.kind, id: s.id });
         }
       }
     }
@@ -662,6 +719,108 @@ function botWants(g, p){
   if (a0 >= lo && a0 <= hi) return false;
   if (a0 < lo) return arrive(FLAP) <= hi;
   return false;
+}
+
+/* ---------- Online: Zustand und Ereignisse übertragen ---------- */
+const r1 = v => Math.round(v * 10) / 10;
+function snap(g){
+  return { t: 's', x: r1(g.x), c: r1(g.cur), sp: r1(g.spd), tt: Math.round(g.t * 1000) / 1000, z: r1(g.zeit), st: g.started ? 1 : 0,
+    ct: Math.round(g.count * 100) / 100, ld: g.lead, tp: g.top,
+    p: g.players.map(p => [r1(p.y), r1(p.vy), r1(p.offX), r1(p.vxOff), p.alive ? 1 : 0, p.score, p.streak, p.hoopsDone, p.swishes,
+      p.shield ? 1 : 0, r1(p.magnet), p.ready ? 1 : 0, p.bestStreak, p.cause === 'miss' ? 1 : p.cause === 'ground' ? 2 : 0]),
+    h: g.hoops.filter(h => h.x0 > g.x - 200).map(h => [h.n,
+      h.ps.reduce((a, s, i) => a | (s.scored ? 1 << i : 0), 0), h.ps.reduce((a, s, i) => a | (s.touched ? 1 << i : 0), 0)]) };
+}
+function applySnap(g, m, me){
+  const dx = m.x - g.x; g.x = Math.abs(dx) > 30 ? m.x : g.x + dx * 0.5;
+  g.cur = m.c; g.spd = m.sp; g.zeit = m.z; g.lead = m.ld; g.top = m.tp; g.count = m.ct;
+  if (Math.abs(m.tt - g.t) > 0.05) g.t = m.tt;
+  const starting = m.st && !g.started;   // Startsprung aller Bälle sofort übernehmen
+  if (m.st) g.started = true;
+  m.p.forEach((a, i) => {
+    const p = g.players[i]; if (!p) return;
+    const alive = !!a[4];
+    if (!starting && i === me && alive && p.alive && Math.abs(a[0] - p.y) < 40) {
+      // eigener Ball: sanft nachführen; kurz nach dem eigenen Tipp kennt der Gastgeber ihn noch nicht
+      const recent = g.t - (p.lastFlap == null ? -9 : p.lastFlap) < 0.15;
+      p.y += (a[0] - p.y) * (recent ? 0.1 : 0.35);
+      if (!recent) p.vy += (a[1] - p.vy) * 0.35;
+    } else { p.y = a[0]; p.vy = a[1]; }
+    p.offX = a[2]; p.vxOff = a[3]; p.alive = alive; p.score = a[5]; p.streak = a[6]; p.hoopsDone = a[7]; p.swishes = a[8];
+    p.shield = !!a[9]; p.magnet = a[10]; p.ready = !!a[11]; p.bestStreak = a[12]; p.cause = a[13] === 1 ? 'miss' : a[13] === 2 ? 'ground' : '';
+  });
+  for (const [n, sm, tm] of m.h) {
+    const h = g.hoops.find(q => q.n === n); if (!h) continue;
+    h.ps.forEach((s, i) => { s.scored = !!(sm >> i & 1); s.touched = !!(tm >> i & 1); });
+  }
+}
+const NET_EV = new Set(['score', 'die', 'star', 'item', 'shield', 'zone', 'go']);
+function netEvent(type, d){
+  const m = { t: 'ev', k: type, i: d && d.p ? d.p.i : -1 };
+  if (d) for (const k of ['pts', 'swish', 'streak', 'gold', 'board', 'n', 'cause', 'all', 'kind', 'id', 'zone', 'pop']) if (d[k] !== undefined) m[k] = d[k];
+  return m;
+}
+function applyEvent(g, m, ev){
+  const p = m.i >= 0 ? g.players[m.i] : null;
+  if (m.k === 'score') {
+    const h = g.hoops.find(q => q.n === m.n);
+    if (h && p) { h.ps[m.i].scored = true; h.net = 1; if (m.swish) h.flash = 1; }
+    if (m.pop) g.pops.push(Object.assign({}, m.pop, { t: 0 }));
+    if (p) p.streak = m.streak;
+    ev('score', Object.assign({}, m, { p }));
+  } else if (m.k === 'die') {
+    if (p) { p.alive = false; p.cause = m.cause; }
+    ev('die', { p, cause: m.cause, all: !!m.all });
+  } else if (m.k === 'star' || m.k === 'item') {
+    const s = g.items.find(q => q.id === m.id);
+    if (s) { s.taken = true; emit(g, s.x, s.y, 10, m.k === 'star' ? '#ffd166' : '#7fd3ff', 130, { life: .5, size: 3 }); }
+    if (m.k === 'item' && m.kind === 'zeit') g.zeit = PW_TIME.zeit;
+    ev(m.k, { p, kind: m.kind });
+  } else if (m.k === 'shield') {
+    if (p) { p.shield = false; if (m.cause === 'ground') { p.y = H - GROUND - R - 1; p.vy = -640; } }   // Schild-Sprung wie beim Gastgeber
+    ev('shield', { p });
+  }
+  else if (m.k === 'zone') ev('zone', { zone: m.zone });
+  else if (m.k === 'go') ev('go', {});
+}
+
+/* Verbindungsdaten (SDP) auf das Nötigste kürzen, damit der QR-Code klein bleibt */
+const SETUP_C = { actpass: 'x', active: 'a', passive: 'p' }, SETUP_N = { x: 'actpass', a: 'active', p: 'passive' };
+const CTYPE = { h: 'host', s: 'srflx', p: 'prflx', r: 'relay' };
+function packDesc(desc){
+  const s = desc.sdp, get = re => { const m = re.exec(s); if (!m) throw new Error('Unvollständige Verbindungsdaten.'); return m[1].trim(); };
+  const ufrag = get(/a=ice-ufrag:(\S+)/), pwd = get(/a=ice-pwd:(\S+)/), fp = get(/a=fingerprint:sha-256 ([0-9A-Fa-f:]+)/), setup = get(/a=setup:(\w+)/);
+  const fpB = btoa(String.fromCharCode.apply(null, fp.split(':').map(x => parseInt(x, 16))));
+  const seen = new Set(), cands = [];
+  for (const m of s.matchAll(/a=candidate:\S+ 1 udp \d+ (\S+) (\d+) typ (host|srflx|prflx|relay)/gi)) {
+    const k = m[1] + ' ' + m[2]; if (seen.has(k)) continue; seen.add(k); cands.push(m[1] + '|' + m[2] + '|' + m[3][0].toLowerCase());
+  }
+  return ['K1', desc.type === 'offer' ? 'o' : 'a', SETUP_C[setup] || 'x', ufrag, pwd, fpB, cands.join(',')].join('~');
+}
+function unpackDesc(code){
+  const f = String(code).trim().split('~');
+  if (f.length !== 7 || f[0] !== 'K1') throw new Error('Das ist kein Korbflieger-Code.');
+  const [, t, su, ufrag, pwd, fpB, cl] = f;
+  let fp;
+  try { fp = Array.from(atob(fpB), ch => ch.charCodeAt(0).toString(16).padStart(2, '0').toUpperCase()).join(':'); }
+  catch (e) { throw new Error('Der Code ist unvollständig.'); }
+  const L = ['v=0', 'o=- 1 2 IN IP4 127.0.0.1', 's=-', 't=0 0', 'a=group:BUNDLE 0', 'a=msid-semantic: WMS',
+    'm=application 9 UDP/DTLS/SCTP webrtc-datachannel', 'c=IN IP4 0.0.0.0',
+    'a=ice-ufrag:' + ufrag, 'a=ice-pwd:' + pwd, 'a=ice-options:trickle', 'a=fingerprint:sha-256 ' + fp,
+    'a=setup:' + (SETUP_N[su] || 'actpass'), 'a=mid:0', 'a=sctp-port:5000', 'a=max-message-size:262144'];
+  (cl ? cl.split(',') : []).forEach((c, k) => {
+    const [ip, port, ty] = c.split('|');
+    L.push('a=candidate:' + (k + 1) + ' 1 udp ' + (2122260223 - k) + ' ' + ip + ' ' + port + ' typ ' + (CTYPE[ty] || 'host'));
+  });
+  L.push('a=end-of-candidates');
+  return { type: t === 'o' ? 'offer' : 'answer', sdp: L.join('\r\n') + '\r\n' };
+}
+function waitIce(pc, ms){
+  return new Promise(res => {
+    if (pc.iceGatheringState === 'complete') return res();
+    const t = setTimeout(res, ms || 2500);
+    pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') { clearTimeout(t); res(); } });
+  });
 }
 
 /* ---------- Aufträge (nur allein) ---------- */
@@ -743,7 +902,6 @@ function drawBall(c, x, y, skin, st){
   circle(c, r); c.fillStyle = sh; c.fill();
   c.lineWidth = st.ring ? 2.5 : 1.5; c.strokeStyle = st.ring || 'rgba(20,10,40,.45)'; c.stroke();
   if (skin.ring) drawRing(c, r, true);
-  // Augen
   const lx = st.lookX * 1.6, ly = st.lookY * 1.6, open = st.blink < 0 ? 0.15 : 1;
   for (const ex of [-4.2, 4.6]) {
     if (st.dead) {
@@ -755,7 +913,6 @@ function drawBall(c, x, y, skin, st){
     c.lineWidth = 1; c.strokeStyle = 'rgba(20,10,40,.5)'; c.stroke();
     if (open > .5) { c.beginPath(); c.arc(ex + 2 + lx, -2 + ly, 2.1, 0, Math.PI * 2); c.fillStyle = '#1c1233'; c.fill(); }
   }
-  // Kappe und Propeller
   c.beginPath(); c.ellipse(0, -r + 2, 7.5, 5.5, 0, Math.PI, Math.PI * 2); c.fillStyle = cap; c.fill();
   c.fillStyle = 'rgba(20,10,40,.25)'; c.fillRect(-8.5, -r + 1, 17, 2.4);
   c.fillStyle = '#1c1233'; c.fillRect(-1, -r - 8, 2, 5);
@@ -773,7 +930,6 @@ function drawBall(c, x, y, skin, st){
   }
 }
 
-/* Extras als Blasen mit Symbol */
 function drawItemIcon(c, kind, x, y){
   c.save(); c.translate(x, y); c.lineCap = 'round'; c.lineJoin = 'round';
   if (kind === 'magnet') {
@@ -814,16 +970,16 @@ function palNow(){
 }
 function paletteTo(z){ palFrom = palMix(); palTo = PAL_RGB[z % PAL_RGB.length]; palK = 0; }
 
-const SKYSTARS = (() => { const r = rng(7), a = []; for (let i = 0; i < 110; i++) a.push({ x: r() * W, y: -260 + r() * (H * 0.62 + 260), s: 0.6 + r() * 1.3, p: r() * 6 }); return a; })();
+const SKYSTARS = (() => { const r = rng(7), a = []; for (let i = 0; i < 120; i++) a.push({ x: -20 + r() * (W + 40), y: -300 + r() * (H * 0.62 + 300), s: 0.6 + r() * 1.3, p: r() * 6 }); return a; })();
 
 function skyline(c, off, col, salt, minH, maxH, segW, win){
   const base = H - GROUND;
-  let i = Math.floor(off / segW) - 1;
+  let i = Math.floor((off - 60) / segW) - 1;
   for (;; i++) {
-    const x0 = i * segW - off; if (x0 > W) break;
-    const r1 = hash(i * 7.13 + salt), r2 = hash(i * 3.71 + salt * 2);
-    const h = minH + r1 * (maxH - minH), w = segW * (0.75 + r2 * 0.45);
-    c.fillStyle = col; c.fillRect(x0, base - h, w, h);
+    const x0 = i * segW - off; if (x0 > W + 60) break;
+    const r1v = hash(i * 7.13 + salt), r2 = hash(i * 3.71 + salt * 2);
+    const h = minH + r1v * (maxH - minH), w = segW * (0.75 + r2 * 0.45);
+    c.fillStyle = col; c.fillRect(x0, base - h, w, h + 320);
     if (r2 > 0.72) { c.beginPath(); c.moveTo(x0, base - h); c.lineTo(x0 + w / 2, base - h - 16); c.lineTo(x0 + w, base - h); c.fill(); }
     if (win) {
       c.fillStyle = win;
@@ -831,6 +987,45 @@ function skyline(c, off, col, salt, minH, maxH, segW, win){
         if (hash(i * 31 + wx * 0.7 + wy * 1.3 + salt) > 0.68) c.fillRect(wx, wy, 4, 6);
     }
   }
+}
+
+/* ---------- Kamera ---------- */
+const cam = { x: 0, y: 0, z: 1, punch: 0, init: false };
+function camTarget(g, mode){
+  const screenH = H + VIEW_EXTRA;
+  if (mode === 'menu' || mode === 'multi' || mode === 'online') return { x: 0, y: -VIEW_EXTRA, z: 1 };   // ruhiges Gesamtbild
+  const alive = g.players.filter(p => p.alive), focus = alive.length ? alive : g.players;
+  let fy = 0, fo = 0, minY = 1e9, maxY = -1e9;
+  for (const p of focus) { fy += p.y; fo += p.offX + p.lane; minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y); }
+  fy /= focus.length; fo /= focus.length;
+  let z = g.n > 1 ? clamp(1.02 - Math.max(0, maxY - minY - 140) / 800, 0.82, 1.02) : 1.1;
+  if (g.n === 1 && g.started && !alive.length && !reduceMotion) z += 0.2 * clamp(g.deadT / 0.5, 0, 1);
+  z += cam.punch;
+  let ty = fy;
+  if (g.started && alive.length) {   // Vorschau auf den nächsten Korb
+    const bx = g.x + fo;
+    const nh = g.hoops.find(h => h.dis === 0 && h.x > bx - 10 && h.x < bx + 280 && !hoopDone(g, h));
+    if (nh) ty = fy * 0.62 + nh.y * 0.38;
+  }
+  const VW = W / z, VH = screenH / z;
+  const x = BALLX + fo * 0.5 - VW * 0.32;
+  const top = CEIL - 40, bottom = H + 24 - VH;
+  const y = bottom <= top ? bottom : clamp(ty - VH * 0.5, top, bottom);
+  return { x, y, z };
+}
+function updateCam(g, rdt, mode){
+  const T = camTarget(g, mode);
+  if (!cam.init) { cam.x = T.x; cam.y = T.y; cam.z = T.z; cam.init = true; return; }
+  const k = 1 - Math.exp(-rdt * 4.5), kz = 1 - Math.exp(-rdt * 3.2);
+  cam.z += (T.z - cam.z) * kz;
+  cam.x += (T.x - cam.x) * k;
+  cam.y += (T.y - cam.y) * k;
+  cam.punch = Math.max(0, cam.punch - rdt * 0.14);
+}
+/* Ebene mit Tiefe p: 0 = fest am Bildschirm, 1 = Spielwelt mit voller Kamerabewegung */
+function layer(c, p, sx, sy){
+  const z = 1 + (cam.z - 1) * p, x = cam.x * p, y = -VIEW_EXTRA + (cam.y + VIEW_EXTRA) * p;
+  c.setTransform(scale * z, 0, 0, scale * z, (-x * z + sx * p) * scale, (-y * z + sy * p) * scale);
 }
 
 /* ---------- Darstellung ---------- */
@@ -846,14 +1041,12 @@ function fit(){
   w = Math.floor(w); h = Math.floor(h);
   stage.style.width = w + 'px'; stage.style.height = h + 'px';
   stage.style.setProperty('--s', (w / W).toFixed(4));
-  const dpr = Math.min(3, window.devicePixelRatio || 1);
+  const dpr = Math.min(2, window.devicePixelRatio || 1);   // mehr Pixel sieht man kaum, kostet aber Akku
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
   scale = cv.width / W;
   VIEW_EXTRA = Math.max(0, cv.height / scale - H);
-  if (g) g.ceil = R - VIEW_EXTRA;
+  cam.init = false;
 }
-
-const hoopDone = (g, h) => h.ps.every((s, i) => s.scored || !g.players[i].alive);
 
 function drawHoopBack(c, h, sx, y, P){
   c.lineCap = 'round';
@@ -868,7 +1061,7 @@ function drawHoopBack(c, h, sx, y, P){
   c.strokeStyle = h.gold ? '#a8781c' : P.hoopD; c.lineWidth = 6;
   c.beginPath(); c.ellipse(sx, y, h.hw, h.hw * 0.3, 0, Math.PI, Math.PI * 2); c.stroke();
 }
-function drawHoopFront(c, h, sx, y, P, t, done){
+function drawHoopFront(c, h, sx, y, P, t){
   const hw = h.hw, ry = hw * 0.3, netH = 36 + h.net * 18, wob = Math.sin(t * 18) * h.net * 4;
   c.strokeStyle = 'rgba(255,246,234,.72)'; c.lineWidth = 1.4;
   const N = 8;
@@ -888,18 +1081,25 @@ function drawHoopFront(c, h, sx, y, P, t, done){
     c.beginPath(); c.ellipse(sx, y, hw + 6 * (1 - h.flash), ry + 3, 0, 0, Math.PI * 2); c.stroke();
   }
   const col = h.gold ? '#ffd166' : P.hoop;
-  c.globalAlpha = done ? 0.55 : 1;
   c.strokeStyle = col; c.lineWidth = 6;
   c.beginPath(); c.ellipse(sx, y, hw, ry, 0, 0, Math.PI); c.stroke();
   c.strokeStyle = 'rgba(255,255,255,.5)'; c.lineWidth = 1.6;
   c.beginPath(); c.ellipse(sx, y + 1, hw - 1, ry - 1, 0, 0.35, Math.PI - 0.35); c.stroke();
   c.fillStyle = col;
   for (const s of [-1, 1]) { c.beginPath(); c.arc(sx + s * hw, y, RIM, 0, Math.PI * 2); c.fill(); }
-  if (h.gold && !done) {
-    c.globalAlpha = 0.5 + 0.5 * Math.sin(t * 5);
+  if (h.gold && h.dis === 0) {
+    c.globalAlpha *= 0.5 + 0.5 * Math.sin(t * 5);
     drawStar(c, sx, y - ry - 14, 5, t); c.fillStyle = '#ffd166'; c.fill();
   }
-  c.globalAlpha = 1;
+}
+/* Auflösen: Ring wird größer und blasser */
+function withDissolve(c, h, sx, y, fn){
+  if (h.dis >= 1) return;
+  const k = h.dis, s = 1 + k * 0.45;
+  c.save();
+  c.globalAlpha = (1 - k) * (1 - k);
+  if (k > 0) { c.translate(sx, y); c.scale(s, s); c.translate(-sx, -y); }
+  fn(); c.restore();
 }
 
 function drawStar(c, x, y, r, rot){
@@ -911,52 +1111,57 @@ function drawStar(c, x, y, r, rot){
 let banner = null;
 function render(g, skinFor, now, showTut){
   const c = ctx, EX = VIEW_EXTRA, MP = g.n > 1;
-  c.setTransform(scale, 0, 0, scale, 0, EX * scale);
   const P = palNow();
-  if (g.shake > 0 && !reduceMotion) c.translate((Math.random() - .5) * g.shake * 8, (Math.random() - .5) * g.shake * 8);
+  const sh = g.shake > 0 && !reduceMotion ? g.shake * 8 : 0, shx = (Math.random() - .5) * sh, shy = (Math.random() - .5) * sh;
   const base = H - GROUND, sxOf = wx => wx - g.x + BALLX;
   const bsxOf = p => BALLX + p.lane + p.offX;
 
+  layer(c, 0, 0, 0);
   const sky = c.createLinearGradient(0, -EX, 0, base);
   sky.addColorStop(0, P.top); sky.addColorStop(0.58, P.mid); sky.addColorStop(1, P.bot);
-  c.fillStyle = sky; c.fillRect(-10, -EX - 10, W + 20, base + EX + 10);
+  c.fillStyle = sky; c.fillRect(-10, -EX - 10, W + 20, H + EX + 20);
 
+  layer(c, 0.06, 0, 0);
   if (P.star > 0.02) {
     c.fillStyle = '#ffffff';
-    for (const s of SKYSTARS) { if (s.y < -EX) continue; c.globalAlpha = P.star * (0.45 + 0.55 * Math.sin(now * 0.002 + s.p) ** 2); c.fillRect(s.x, s.y, s.s, s.s); }
+    for (const s of SKYSTARS) { c.globalAlpha = P.star * (0.45 + 0.55 * Math.sin(now * 0.002 + s.p) ** 2); c.fillRect(s.x, s.y, s.s, s.s); }
     c.globalAlpha = 1;
   }
+  layer(c, 0.15, 0, 0);
   const glow = c.createRadialGradient(300, 232, 8, 300, 232, 100);
   glow.addColorStop(0, P.sun); glow.addColorStop(1, 'rgba(255,255,255,0)');
   c.globalAlpha = 0.35; c.fillStyle = glow; c.fillRect(190, 122, 200, 220); c.globalAlpha = 1;
   c.fillStyle = P.sun; c.beginPath(); c.arc(300, 232, 27, 0, Math.PI * 2); c.fill();
 
+  layer(c, 0.35, shx, shy);
   skyline(c, g.x * 0.15, P.far, 1, 60, 170, 46, null);
+  layer(c, 0.65, shx, shy);
   skyline(c, g.x * 0.45, P.near, 5, 30, 110, 58, P.win);
 
-  c.fillStyle = P.ground; c.fillRect(-10, base, W + 20, GROUND + 40);
-  c.fillStyle = P.line; c.fillRect(-10, base, W + 20, 3);
+  /* Spielwelt */
+  layer(c, 1, shx, shy);
+  c.fillStyle = P.ground; c.fillRect(-60, base, W + 120, GROUND + 320);
+  c.fillStyle = P.line; c.fillRect(-60, base, W + 120, 3);
   c.globalAlpha = 0.35;
   const off = g.x % 140;
   for (let k = -1; k < 4; k++) c.fillRect(k * 140 - off, base + 24, 56, 4);
   c.globalAlpha = 1;
 
-  if (MP) drawZones(c, g, base, EX);
+  if (!MP && best > 0 && bestX > 0) drawRecordFlag(c, sxOf(bestX), base);
 
-  // Schatten
   for (const p of g.players) {
     const bsx = bsxOf(p), hgt = clamp((base - p.y) / 500, 0, 1);
-    if (bsx < -30) continue;
+    if (bsx < -60) continue;
     c.fillStyle = 'rgba(0,0,0,' + (0.3 * (1 - hgt * 0.7)).toFixed(3) + ')';
     c.beginPath(); c.ellipse(bsx, base + 6, R * (1.2 - hgt * 0.6), 3.5, 0, 0, Math.PI * 2); c.fill();
   }
 
   const hy = h => h.y + Math.sin(g.t * 40) * h.wob * 2.5;
-  for (const h of g.hoops) { const sx = sxOf(h.x); if (sx > -70 && sx < W + 70) drawHoopBack(c, h, sx, hy(h), P); }
+  for (const h of g.hoops) { const sx = sxOf(h.x); if (sx > -90 && sx < W + 90) withDissolve(c, h, sx, hy(h), () => drawHoopBack(c, h, sx, hy(h), P)); }
 
   for (const s of g.items) {
     if (s.taken) continue;
-    const sx = sxOf(s.x); if (sx < -20 || sx > W + 20) continue;
+    const sx = sxOf(s.x); if (sx < -40 || sx > W + 40) continue;
     const bob = Math.sin(g.t * 3 + s.ph) * 4;
     if (s.kind === 'star') {
       c.fillStyle = 'rgba(255,209,102,.25)'; c.beginPath(); c.arc(sx, s.y + bob, 15, 0, Math.PI * 2); c.fill();
@@ -995,7 +1200,7 @@ function render(g, skinFor, now, showTut){
   if (showTut) drawTutorial(c, g, sxOf, bsxOf(g.players[0]));
 
   for (const p of g.players) {
-    const bsx = bsxOf(p); if (bsx < -30) continue;
+    const bsx = bsxOf(p); if (bsx < -60) continue;
     const vx = g.cur + p.vxOff, vy = g.started && !g.hold ? p.vy : 0, vl = Math.hypot(vx, vy) || 1;
     if (MP && !p.alive) c.globalAlpha = 0.55;
     drawBall(c, bsx, p.y, skinFor(p.i), { rot: p.rot, prop: p.prop, blink: p.blink, sq: p.sq, dead: !p.alive,
@@ -1012,7 +1217,7 @@ function render(g, skinFor, now, showTut){
     }
   }
 
-  for (const h of g.hoops) { const sx = sxOf(h.x); if (sx > -70 && sx < W + 70) drawHoopFront(c, h, sx, hy(h), P, g.t, hoopDone(g, h)); }
+  for (const h of g.hoops) { const sx = sxOf(h.x); if (sx > -90 && sx < W + 90) withDissolve(c, h, sx, hy(h), () => drawHoopFront(c, h, sx, hy(h), P, g.t)); }
 
   c.textAlign = 'center'; c.textBaseline = 'middle';
   for (const q of g.pops) {
@@ -1025,6 +1230,10 @@ function render(g, skinFor, now, showTut){
   }
   c.globalAlpha = 1;
 
+  /* Bildschirm-Ebene */
+  layer(c, 0, 0, 0);
+  if (MP) drawZones(c, g, EX);
+  c.textAlign = 'center'; c.textBaseline = 'middle';
   if (banner) {
     const a = clamp(banner.t < .3 ? banner.t / .3 : (2.2 - banner.t) / .6, 0, 1);
     c.globalAlpha = a; c.font = '400 34px Bungee, Figtree, sans-serif'; c.fillStyle = '#fff6ea';
@@ -1040,26 +1249,45 @@ function render(g, skinFor, now, showTut){
   if (g.flash > 0 && !reduceMotion) { c.fillStyle = 'rgba(255,246,234,' + g.flash.toFixed(3) + ')'; c.fillRect(-10, -EX - 10, W + 20, H + EX + 20); }
 }
 
-/* Mehrspieler: Spalten zum Tippen. Vor dem Start deutlich, im Spiel nur unten am Boden */
-function drawZones(c, g, base, EX){
+function drawRecordFlag(c, x, base){
+  if (x < -40 || x > W + 60) return;
+  c.save();
+  c.fillStyle = 'rgba(255,246,234,.85)'; c.fillRect(x - 1.5, base - 150, 3, 150);
+  c.fillStyle = '#ff9f43';
+  c.beginPath(); c.moveTo(x + 1.5, base - 150); c.lineTo(x + 62, base - 138); c.lineTo(x + 1.5, base - 124); c.closePath(); c.fill();
+  c.font = '400 10px Bungee, Figtree, sans-serif'; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillStyle = '#1c1233';
+  c.fillText('REKORD', x + 6, base - 141);
+  c.font = '800 11px Figtree, sans-serif'; c.fillStyle = '#fff6ea'; c.fillText(String(best), x + 6, base - 113);
+  c.restore();
+}
+
+/* Mehrspieler: Spalten zum Tippen (ein Gerät) bzw. Bereit-Liste (online); im Spiel Punkte am unteren Rand */
+function drawZones(c, g, EX){
   const n = g.n, zw = W / n, pre = !g.started;
   c.save(); c.textAlign = 'center'; c.textBaseline = 'middle';
+  if (g.online && pre) {
+    const y0 = 300 - n * 15;
+    c.fillStyle = 'rgba(24,15,45,.72)'; c.fillRect(70, y0 - 24, W - 140, n * 30 + 22);
+    g.players.forEach((p, i) => {
+      c.font = '400 14px Bungee, Figtree, sans-serif'; c.fillStyle = PCOL[i];
+      c.fillText('Spieler ' + (i + 1) + (i === NET.me ? ' (du)' : '') + ' · ' + (p.ready ? 'bereit' : 'wartet'), W / 2, y0 + i * 30);
+    });
+    c.restore(); return;
+  }
   for (let i = 0; i < n; i++) {
     const p = g.players[i], x0 = i * zw;
-    c.globalAlpha = pre ? (p.ready ? 0.2 : 0.12) : (p.alive ? 0.22 : 0.08);
-    c.fillStyle = PCOL[i];
-    if (pre) c.fillRect(x0, -EX, zw, H + EX); else c.fillRect(x0, base + 3, zw, GROUND);
-    c.globalAlpha = 1;
-    if (i > 0) { c.fillStyle = 'rgba(255,246,234,.25)'; c.fillRect(x0 - 0.5, pre ? -EX : base + 3, 1, pre ? H + EX : GROUND); }
-    c.fillStyle = PCOL[i];
     if (pre) {
-      c.font = '400 ' + (n > 3 ? 13 : 15) + 'px Bungee, Figtree, sans-serif';
-      c.fillText('Spieler ' + (i + 1), x0 + zw / 2, base - 150);
+      c.globalAlpha = p.ready ? 0.2 : 0.12; c.fillStyle = PCOL[i]; c.fillRect(x0, -EX, zw, H + EX); c.globalAlpha = 1;
+      if (i > 0) { c.fillStyle = 'rgba(255,246,234,.25)'; c.fillRect(x0 - 0.5, -EX, 1, H + EX); }
+      c.fillStyle = PCOL[i]; c.font = '400 ' + (n > 3 ? 13 : 15) + 'px Bungee, Figtree, sans-serif';
+      c.fillText('Spieler ' + (i + 1), x0 + zw / 2, H - GROUND - 150);
       c.font = '800 13px Figtree, sans-serif'; c.fillStyle = '#fff6ea';
-      c.fillText(p.ready ? 'bereit ✓' : 'hier tippen', x0 + zw / 2, base - 128);
+      c.fillText(p.ready ? 'bereit ✓' : 'hier tippen', x0 + zw / 2, H - GROUND - 128);
     } else {
-      c.font = '400 15px Bungee, Figtree, sans-serif'; c.globalAlpha = p.alive ? 1 : 0.5;
-      c.fillText((i + 1) + ' · ' + p.score, x0 + zw / 2, base + 46); c.globalAlpha = 1;
+      c.globalAlpha = p.alive ? 0.28 : 0.1; c.fillStyle = PCOL[i]; c.fillRect(x0, H - 34, zw, 34); c.globalAlpha = 1;
+      if (i > 0) { c.fillStyle = 'rgba(255,246,234,.25)'; c.fillRect(x0 - 0.5, H - 34, 1, 34); }
+      c.font = '400 15px Bungee, Figtree, sans-serif'; c.fillStyle = PCOL[i]; c.globalAlpha = p.alive ? 1 : 0.5;
+      c.fillText((i + 1) + ' · ' + p.score, x0 + zw / 2, H - 17); c.globalAlpha = 1;
     }
   }
   c.restore();
@@ -1082,30 +1310,57 @@ function drawTutorial(c, g, sxOf, bsx){
   c.restore();
 }
 
-/* ---------- Ton ---------- */
-let ac = null, muted = store.get('muted', false);
+/* ---------- Ton und Musik ---------- */
+let ac = null;
+let snd = store.get('snd', null);               // 0 Musik und Effekte, 1 nur Effekte, 2 aus
+if (snd === null) snd = store.get('muted', false) ? 2 : 0;
+const SND_LABEL = ['Musik und Effekte', 'Nur Effekte', 'Ton aus'];
 function audioInit(){
   if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ac = null; } }
   if (ac && ac.state === 'suspended') ac.resume().catch(() => {});
+  musicStart();
 }
-function tone(freq, dur, type, vol, slide, delay){
-  if (muted || !ac) return;
-  const t = ac.currentTime + (delay || 0), o = ac.createOscillator(), gn = ac.createGain();
+function voice(freq, dur, type, vol, slide, at){
+  const t = at, o = ac.createOscillator(), gn = ac.createGain();
   o.type = type || 'sine'; o.frequency.setValueAtTime(freq, t);
   if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq * slide), t + dur);
   gn.gain.setValueAtTime(0.0001, t); gn.gain.exponentialRampToValueAtTime(vol, t + 0.01); gn.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   o.connect(gn); gn.connect(ac.destination); o.start(t); o.stop(t + dur + 0.03);
 }
 let noiseBuf = null;
-function noise(dur, vol, freq, toFreq){
-  if (muted || !ac) return;
+function noiseAt(dur, vol, freq, toFreq, at){
   if (!noiseBuf) { noiseBuf = ac.createBuffer(1, ac.sampleRate * 0.5, ac.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
-  const t = ac.currentTime, s = ac.createBufferSource(), f = ac.createBiquadFilter(), gn = ac.createGain();
+  const t = at, s = ac.createBufferSource(), f = ac.createBiquadFilter(), gn = ac.createGain();
   s.buffer = noiseBuf; f.type = 'bandpass'; f.Q.value = 1.2; f.frequency.setValueAtTime(freq, t);
   if (toFreq) f.frequency.exponentialRampToValueAtTime(toFreq, t + dur);
   gn.gain.setValueAtTime(vol, t); gn.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   s.connect(f); f.connect(gn); gn.connect(ac.destination); s.start(t); s.stop(t + dur + 0.02);
 }
+function tone(freq, dur, type, vol, slide, delay){ if (snd === 2 || !ac) return; voice(freq, dur, type, vol, slide, ac.currentTime + (delay || 0)); }
+function noise(dur, vol, freq, toFreq){ if (snd === 2 || !ac) return; noiseAt(dur, vol, freq, toFreq, ac.currentTime); }
+
+/* Kleine Hintergrundmusik: Am–F–C–G, Tempo steigt mit der Geschwindigkeit */
+const music = { timer: null, next: 0, step: 0 };
+const CHORDS = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]];
+const midi = n => 440 * Math.pow(2, (n - 69) / 12);
+function musicStart(){ if (!ac || music.timer || snd !== 0) return; music.next = ac.currentTime + 0.1; music.timer = setInterval(musicTick, 60); }
+function musicStop(){ clearInterval(music.timer); music.timer = null; }
+function musicTick(){
+  if (!ac || snd !== 0) { musicStop(); return; }
+  if (mode === 'pause' || document.hidden) { music.next = ac.currentTime + 0.1; return; }
+  const playing = mode === 'play' && g.started;
+  const bpm = 100 + (playing ? clamp((g.spd - 150) / 90, 0, 1) * 30 : 0), e8 = 60 / bpm / 2;
+  const vol = playing ? 1 : 0.55;
+  while (music.next < ac.currentTime + 0.25) {
+    const st = music.step, ch = CHORDS[Math.floor(st / 8) % 4], e = st % 8, t = Math.max(music.next, ac.currentTime + 0.01);
+    if (e === 0 || e === 4) voice(midi(ch[0] - 24), 0.3, 'triangle', 0.06 * vol, 0, t);
+    if (e === 6) voice(midi(ch[0] - 12), 0.12, 'triangle', 0.035 * vol, 0, t);
+    if (e % 2 === 1) noiseAt(0.035, 0.022 * vol, 7000, 0, t);
+    if (playing && (e === 0 || e === 3 || e === 5)) voice(midi(ch[(st + e) % 3] + 12), 0.2, 'sine', 0.025, 0, t);
+    music.step++; music.next += e8;
+  }
+}
+
 const sfx = {
   flap(){ noise(0.09, 0.14, 900, 2200); tone(300, 0.07, 'triangle', 0.05, 1.7); },
   rim(hard){ const v = clamp(hard / 500, 0.03, 0.09); tone(880, 0.2, 'square', v * 0.5); tone(1320, 0.26, 'triangle', v); },
@@ -1114,6 +1369,7 @@ const sfx = {
   score(){ tone(392, 0.12, 'triangle', 0.14); tone(587, 0.16, 'triangle', 0.11, 0, 0.06); },
   swish(n){ noise(0.28, 0.12, 2500, 600); const b = 523 * Math.pow(2, Math.min(n - 1, 5) / 12 * 2);
     tone(b, 0.12, 'sine', 0.15); tone(b * 1.25, 0.14, 'sine', 0.12, 0, 0.07); tone(b * 1.5, 0.22, 'sine', 0.1, 0, 0.14); },
+  pop(){ noise(0.16, 0.06, 3200, 900); },
   gold(){ [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.14, 'sine', 0.1, 0, i * 0.05)); },
   star(){ tone(1318, 0.1, 'sine', 0.12); tone(1760, 0.18, 'sine', 0.1, 0, 0.06); },
   item(){ tone(440, 0.25, 'triangle', 0.1, 2); tone(660, 0.25, 'sine', 0.07, 2, 0.05); },
@@ -1123,6 +1379,7 @@ const sfx = {
   tick(){ tone(660, 0.08, 'square', 0.05); },
   go(){ tone(880, 0.25, 'triangle', 0.12); tone(1320, 0.3, 'sine', 0.08, 0, 0.05); },
   out(){ tone(300, 0.3, 'sawtooth', 0.05, 0.5); },
+  join(){ tone(587, 0.12, 'triangle', 0.1); tone(880, 0.18, 'triangle', 0.08, 0, 0.08); },
   die(){ tone(330, 0.55, 'sawtooth', 0.07, 0.3); noise(0.3, 0.1, 400, 120); },
   win(){ [523, 659, 784, 1046, 1318].forEach((f, i) => tone(f, 0.22, 'triangle', 0.1, 0, i * 0.1)); },
   zone(){ [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.18, 'triangle', 0.09, 0, i * 0.08)); }
@@ -1130,7 +1387,7 @@ const sfx = {
 const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} };
 
 /* ---------- Spielablauf und Oberfläche ---------- */
-let best = store.get('best', 0), bank = store.get('stars', 0);
+let best = store.get('best', 0), bestX = store.get('bestX', 0), bank = store.get('stars', 0);
 let owned = store.get('owned', ['filz']), skinId = store.get('skin', 'filz');
 if (!Array.isArray(owned) || !owned.includes('filz')) owned = ['filz'];
 if (!owned.includes(skinId)) skinId = 'filz';
@@ -1144,12 +1401,12 @@ if (!Array.isArray(missions) || missions.length !== 3 || missions.some(m => !MTY
   missions = []; for (let i = 0; i < 3; i++) missions.push(newMission(missions, mlevels, mrnd));
 }
 let g = null, mode = 'menu', slow = 1, lastScore = -1, lastCount = 0;
-g = newGame(newSeed(), VIEW_EXTRA, 1);
+g = newGame(newSeed(), 1);
 const P0 = () => g.players[0];
 
 /* Spieler 1 hat den gewählten Ball, die anderen bekommen die übrigen eigenen Bälle */
 function skinFor(i){
-  if (i === 0) return skinById(skinId);
+  if (i === 0 || (g.online && i === NET.me)) return skinById(skinId);
   const list = SKINS.filter(s => owned.includes(s.id));
   const k = list.findIndex(s => s.id === skinId);
   return list[(k + i) % list.length];
@@ -1194,21 +1451,22 @@ function setMode(m){
   const MP = g.n > 1;
   $('pMenu').hidden = m !== 'menu';
   $('pMulti').hidden = m !== 'multi';
+  $('pOnline').hidden = m !== 'online';
   $('pReady').hidden = m !== 'ready';
   $('pOver').hidden = m !== 'over';
   $('pResult').hidden = m !== 'result';
   $('pPause').hidden = m !== 'pause';
-  $('btnPause').hidden = m !== 'play';
+  $('btnPause').hidden = m !== 'play' || g.online;
   $('score').hidden = MP;
-  $('score').style.visibility = m === 'menu' || m === 'over' || m === 'multi' ? 'hidden' : 'visible';
-  $('mpScores').hidden = !MP || m === 'result' || m === 'multi' || m === 'menu';
+  $('score').style.visibility = m === 'menu' || m === 'over' || m === 'multi' || m === 'online' ? 'hidden' : 'visible';
+  $('mpScores').hidden = !MP || m === 'result' || m === 'multi' || m === 'menu' || m === 'online';
   $('hudStars').hidden = MP && m !== 'menu' && m !== 'multi';
   $('pauseSect').hidden = MP; $('pauseMissions').hidden = MP;
   if (m === 'menu') renderMissions($('menuMissions'), false);
   if (m === 'pause' && !MP) renderMissions($('pauseMissions'), true);
   if (m === 'ready') {
-    $('readyHint').textContent = MP ? 'Alle tippen in ihre Spalte' : g.revived ? 'Tippen zum Weiterfliegen' : 'Tippen zum Starten';
-    $('readySub').textContent = MP ? 'Verpasst oder aufgeschlagen = raus · am Ende zählen die Punkte' : 'Von oben durch den Korb · Ring nicht berühren = Swish';
+    $('readyHint').textContent = g.online ? 'Tippen, wenn du bereit bist' : MP ? 'Alle tippen in ihre Spalte' : g.revived ? 'Tippen zum Weiterfliegen' : 'Tippen zum Starten';
+    $('readySub').textContent = g.online ? 'Es geht los, wenn alle bereit sind · tippe überall' : MP ? 'Verpasst oder aufgeschlagen = raus · am Ende zählen die Punkte' : 'Von oben durch den Korb · Ring nicht berühren = Swish';
   }
   hud();
 }
@@ -1227,18 +1485,18 @@ function hud(){
   } else b.hidden = true;
   $('starNum').textContent = g.n === 1 ? bank + p.got - p.gotBanked : bank;
   $('menuBest').textContent = best;
-  $('icoOn').hidden = muted; $('icoOff').hidden = !muted;
-  $('btnSound').setAttribute('aria-label', muted ? 'Ton an' : 'Ton aus');
+  $('icoAll').hidden = snd !== 0; $('icoFx').hidden = snd !== 1; $('icoOff').hidden = snd !== 2;
+  $('btnSound').setAttribute('aria-label', 'Ton: ' + SND_LABEL[snd]);
   if (g.n > 1) mpScores();
   chips();
 }
 function mpScores(){
-  const key = g.players.map(p => p.score + (p.alive ? '' : 'x')).join('|');
+  const key = g.players.map(p => p.score + (p.alive ? '' : 'x')).join('|') + (g.online ? NET.me : '');
   if (key === mpKey) return;
   mpKey = key;
   const el = $('mpScores'); el.textContent = '';
   for (const p of g.players) {
-    const s = document.createElement('span'); s.className = 'ps' + (p.alive ? '' : ' out'); s.style.setProperty('--c', PCOL[p.i]);
+    const s = document.createElement('span'); s.className = 'ps' + (p.alive ? '' : ' out') + (g.online && p.i === NET.me ? ' me' : ''); s.style.setProperty('--c', PCOL[p.i]);
     s.setAttribute('aria-label', 'Spieler ' + (p.i + 1) + ': ' + p.score + ' Punkte' + (p.alive ? '' : ', raus'));
     const dot = document.createElement('i'); s.append(dot, document.createTextNode(String(p.score))); el.append(s);
   }
@@ -1259,11 +1517,12 @@ function chips(){
   for (const t of parts) { const s = document.createElement('span'); s.className = 'chip'; s.textContent = t; el.append(s); }
 }
 
-function freshGame(n){
-  g = newGame(newSeed(), VIEW_EXTRA, n); lastScore = -1; mpKey = ''; chipKey = ''; lastCount = 0;
+function freshGame(n, seed){
+  g = newGame(seed == null ? newSeed() : seed, n); lastScore = -1; mpKey = ''; chipKey = ''; lastCount = 0; cam.init = false;
   if (palTo !== PAL_RGB[0]) paletteTo(0);
 }
 function newRound(){
+  if (g.online) { if (NET.role === 'host') hostStart(); return; }
   if (g.n > 1) { startMulti(g.n); return; }
   refreshMissions();
   freshGame(1);
@@ -1275,6 +1534,7 @@ function startMulti(n){
   setMode('ready');
 }
 function toMenu(){
+  if (NET.role) netReset(true);
   refreshMissions();
   freshGame(1);
   setMode('menu');
@@ -1288,12 +1548,15 @@ function tap(i){
     return;
   }
   if (mode !== 'ready' && mode !== 'play') return;
+  if (g.online) i = NET.me;
   const p = g.players[i]; if (!p) return;
   if (!g.started) {
+    if (NET.role === 'guest') { if (!p.ready && !g.count) { p.ready = true; netSend(NET.guest, { t: 'r' }); sfx.ready(i); } return; }
     if (readyUp(g, p)) { sfx.ready(i); if (g.count > 0) setMode('play'); hud(); }
     return;
   }
   flap(g, p, onEv);
+  if (NET.role === 'guest') netSend(NET.guest, { t: 'f' });
 }
 
 function bankRun(){
@@ -1305,6 +1568,7 @@ function bankRun(){
 
 function onEv(type, d){
   const MP = g.n > 1;
+  if (NET.role === 'host' && g.online && NET_EV.has(type)) netBroadcast(netEvent(type, d));
   if (type === 'flap') sfx.flap();
   else if (type === 'rim') sfx.rim(d.hard);
   else if (type === 'board') sfx.board(d.hard);
@@ -1312,7 +1576,8 @@ function onEv(type, d){
   else if (type === 'go') sfx.go();
   else if (type === 'score') {
     if (d.gold) sfx.gold(); else if (d.swish) sfx.swish(d.streak); else sfx.score();
-    if (d.swish) buzz(d.streak >= 3 ? 25 : 12);
+    setTimeout(sfx.pop, 120);
+    if (d.swish) { buzz(d.streak >= 3 ? 25 : 12); if (!MP && !reduceMotion) cam.punch = Math.min(0.07, 0.025 + d.streak * 0.008); }
     if (!MP && !tutDone) { tutDone = true; store.set('tut', true); }
     hud(); checkMissions();
   }
@@ -1329,20 +1594,21 @@ function onEv(type, d){
     if (MP) {
       buzz(40); hud();
       if (d.all) { sfx.die(); if (!reduceMotion) slow = 0.3; setMode('dead'); }
-      else { sfx.out(); toast('Spieler ' + (d.p.i + 1) + ' ist raus'); }
+      else { sfx.out(); toast((g.online && d.p && d.p.i === NET.me ? 'Du bist' : 'Spieler ' + (d.p.i + 1) + ' ist') + ' raus'); }
       return;
     }
     const p = P0();
     sfx.die(); buzz(80);
     if (!reduceMotion) slow = 0.3;
     p.newBest = p.score > best;
-    if (p.newBest) { best = p.score; store.set('best', best); }
+    if (p.newBest) { best = p.score; bestX = g.x + p.offX; store.set('best', best); store.set('bestX', bestX); }
     bankRun(); checkMissions();
     totals.runs++; store.set('totals', totals);
     setMode('dead');
   }
 }
 
+function hideToast(){ clearTimeout(toast.h); $('toast').hidden = true; }
 function showOver(){
   hideToast();
   const p = P0();
@@ -1369,27 +1635,29 @@ function ranking(players){
     return { p, place };
   });
 }
-function hideToast(){ clearTimeout(toast.h); $('toast').hidden = true; }
 function showResult(){
   hideToast();
   const rk = ranking(g.players);
   const winners = rk.filter(r => r.place === 1);
-  $('resTitle').textContent = winners.length > 1 ? 'Unentschieden' : 'Spieler ' + (winners[0].p.i + 1) + ' gewinnt';
+  $('resTitle').textContent = winners.length > 1 ? 'Unentschieden'
+    : g.online && winners[0].p.i === NET.me ? 'Du gewinnst!' : 'Spieler ' + (winners[0].p.i + 1) + ' gewinnt';
   const list = $('resList'); list.textContent = '';
   for (const { p, place } of rk) {
     const li = document.createElement('li'); li.style.setProperty('--c', PCOL[p.i]);
     const pl = document.createElement('span'); pl.className = 'pl'; pl.textContent = place + '.';
     const nm = document.createElement('span'); nm.className = 'nm';
-    const dot = document.createElement('i'); nm.append(dot, document.createTextNode('Spieler ' + (p.i + 1)));
+    const dot = document.createElement('i'); nm.append(dot, document.createTextNode('Spieler ' + (p.i + 1) + (g.online && p.i === NET.me ? ' (du)' : '')));
     const sm = document.createElement('small');
-    sm.textContent = p.hoopsDone + (p.hoopsDone === 1 ? ' Korb' : ' Körbe') + ' · ' + p.swishes + ' Swishes · ' + (p.cause === 'miss' ? 'Korb verpasst' : 'aufgeschlagen');
+    sm.textContent = p.hoopsDone + (p.hoopsDone === 1 ? ' Korb' : ' Körbe') + ' · ' + p.swishes + ' Swishes · ' + (p.cause === 'miss' ? 'Korb verpasst' : p.cause === 'ground' ? 'aufgeschlagen' : 'getrennt');
     nm.append(sm);
     const pt = document.createElement('span'); pt.className = 'pt'; pt.textContent = p.score;
     li.append(pl, nm, pt); list.append(li);
   }
+  const guest = NET.role === 'guest';
+  $('btnRematch').hidden = guest; $('resWait').hidden = !guest;
   sfx.win();
   setMode('result');
-  $('btnRematch').focus({ preventScroll: true });
+  (guest ? $('btnMenu') : $('btnRematch')).focus({ preventScroll: true });
 }
 
 function doRevive(){
@@ -1401,7 +1669,7 @@ function doRevive(){
 
 function toast(msg){
   const t = $('toast'); t.textContent = msg; t.hidden = false;
-  clearTimeout(toast.h); toast.h = setTimeout(() => { t.hidden = true; }, 1800);
+  clearTimeout(toast.h); toast.h = setTimeout(() => { t.hidden = true; }, 1900);
 }
 
 function drawPreview(cvs, skin){
@@ -1436,23 +1704,286 @@ function renderShop(){
 function openShop(){ renderShop(); $('pShop').hidden = false; $('shopClose').focus({ preventScroll: true }); }
 function closeShop(){ $('pShop').hidden = true; }
 
-function pause(){ if (mode === 'play') setMode('pause'); }
+function pause(){ if (mode === 'play' && !g.online) setMode('pause'); }
 function resume(){ if (mode === 'pause') { setMode('play'); last = performance.now(); } }
 
+/* ---------- Online: Verbindung über WLAN (WebRTC ohne Server, Austausch per QR-Code) ---------- */
+const NET = { role: null, me: 0, peers: [], pending: null, guest: null, sendT: 0 };
+const RTC_CFG = { iceServers: [] };
+const LIBS = { qrcode: 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js', jsQR: 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js' };
+const libP = {};
+function loadLib(name){
+  if (window[name]) return Promise.resolve();
+  if (libP[name]) return libP[name];
+  return (libP[name] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = LIBS[name]; s.async = true;
+    s.onload = () => window[name] ? res() : rej(new Error('QR-Werkzeug fehlt.'));
+    s.onerror = () => { libP[name] = null; rej(new Error('Das QR-Werkzeug konnte nicht geladen werden. Beim ersten Mal braucht das Handy Internet.')); };
+    document.head.append(s);
+  }));
+}
+function netSend(peer, obj){ try { if (peer && peer.dc && peer.dc.readyState === 'open') peer.dc.send(JSON.stringify(obj)); } catch (e) {} }
+function netBroadcast(obj){ const s = JSON.stringify(obj); for (const p of NET.peers) { try { if (p.dc.readyState === 'open') p.dc.send(s); } catch (e) {} } }
+function netReset(sayBye){
+  const all = NET.peers.concat(NET.pending ? [NET.pending] : [], NET.guest ? [NET.guest] : []);
+  for (const p of all) { if (sayBye) netSend(p, { t: 'bye' }); p.closing = true; try { p.dc && p.dc.close(); } catch (e) {} try { p.pc.close(); } catch (e) {} }
+  NET.role = null; NET.me = 0; NET.peers = []; NET.pending = null; NET.guest = null;
+}
+function wireChannel(peer, dc){
+  peer.dc = dc;
+  dc.onopen = () => {
+    peer.open = true; sfx.join();
+    if (NET.role === 'host') {
+      clearTimeout(peer.timer);
+      NET.peers.push(peer); NET.pending = null;
+      netSend(peer, { t: 'hello', i: peer.i });
+      netBroadcast({ t: 'lobby', n: NET.peers.length + 1 });
+      toast('Spieler ' + (peer.i + 1) + ' ist verbunden');
+      if (NET.peers.length < 3) hostNewInvite().then(() => { if (mode === 'online') renderOnline(); }).catch(() => {});
+      if (mode === 'online') renderOnline();
+    } else if (mode === 'online') renderOnline();
+  };
+  dc.onmessage = e => { peer.seen = performance.now(); let m; try { m = JSON.parse(e.data); } catch (x) { return; } if (m.t !== 'p') onNetMsg(peer, m); };
+  dc.onclose = () => onNetClose(peer);
+}
+/* Lebenszeichen: jede Sekunde ein Ping; wer 6 s nichts sendet, gilt als getrennt */
+setInterval(() => {
+  if (!NET.role) return;
+  const now = performance.now();
+  const list = NET.role === 'host' ? NET.peers.slice() : NET.guest && NET.guest.open ? [NET.guest] : [];
+  for (const p of list) {
+    if (!p.seen) p.seen = now;
+    if (now - p.seen > 6000) { try { p.pc.close(); } catch (e) {} onNetClose(p); }
+    else netSend(p, { t: 'p' });
+  }
+}, 1000);
+window.addEventListener('pagehide', () => { if (NET.role) netReset(true); });
+if (QS.has('debug')) window.__net = NET;
+async function hostNewInvite(){
+  const pc = new RTCPeerConnection(RTC_CFG);
+  const peer = { pc, dc: null, i: NET.peers.length + 1, open: false, code: '' };
+  wireChannel(peer, pc.createDataChannel('kf', { ordered: true }));
+  NET.pending = peer;
+  await pc.setLocalDescription(await pc.createOffer());
+  await waitIce(pc);
+  peer.code = packDesc(pc.localDescription);
+  return peer;
+}
+async function hostAcceptAnswer(code){
+  const peer = NET.pending;
+  if (!peer) throw new Error('Es gibt gerade keine offene Einladung.');
+  const d = unpackDesc(code);
+  if (d.type !== 'answer') throw new Error('Das ist ein Einladungs-Code. Scanne den Antwort-Code vom anderen Handy.');
+  await peer.pc.setRemoteDescription(d);
+  toast('Verbinde …');
+  peer.timer = setTimeout(() => { if (!peer.open && NET.pending === peer) toast('Keine Verbindung. Seid ihr im selben WLAN?'); }, 9000);
+}
+async function guestAnswer(code){
+  const d = unpackDesc(code);
+  if (d.type !== 'offer') throw new Error('Das ist ein Antwort-Code. Scanne den Einladungs-Code vom Gastgeber.');
+  const pc = new RTCPeerConnection(RTC_CFG);
+  const peer = { pc, dc: null, i: 0, open: false, code: '' };
+  pc.ondatachannel = e => wireChannel(peer, e.channel);
+  NET.guest = peer;
+  await pc.setRemoteDescription(d);
+  await pc.setLocalDescription(await pc.createAnswer());
+  await waitIce(pc);
+  peer.code = packDesc(pc.localDescription);
+  return peer;
+}
+function onNetMsg(peer, m){
+  if (NET.role === 'host') {
+    const p = g.online ? g.players[peer.i] : null;
+    if (m.t === 'f' && p && g.started) flap(g, p, onEv);
+    else if (m.t === 'r' && p && readyUp(g, p)) { sfx.ready(p.i); if (g.count > 0 && mode === 'ready') setMode('play'); }
+    else if (m.t === 'bye') onNetClose(peer);
+    return;
+  }
+  if (m.t === 'hello') { NET.me = m.i; NET.lobby = m.i + 1; if (mode === 'online') renderOnline(); }
+  else if (m.t === 'lobby') { NET.lobby = m.n; if (mode === 'online') renderOnline(); }
+  else if (m.t === 'start') { NET.me = m.you; freshGame(m.n, m.seed); g.online = true; g.puppet = true; setMode('ready'); }
+  else if (m.t === 's' && g.online) { applySnap(g, m, NET.me); if (mode === 'ready' && (g.count > 0 || g.started)) setMode('play'); }
+  else if (m.t === 'ev' && g.online) applyEvent(g, m, onEv);
+  else if (m.t === 'end' && g.online) showResult();
+  else if (m.t === 'bye') onNetClose(peer);
+}
+function onNetClose(peer){
+  if (peer.closing) return;
+  peer.closing = true;
+  if (NET.role === 'host') {
+    const k = NET.peers.indexOf(peer);
+    if (k < 0) return;
+    NET.peers.splice(k, 1);
+    if (g.online && g.players[peer.i]) {
+      const p = g.players[peer.i]; p.shield = false;
+      if (p.alive) { die(g, p, 'gone', onEv); p.cause = ''; }
+      p.ready = true;   // wer weg ist, hält den Start nicht auf
+      if (!g.started && !g.count && g.players.every(q => q.ready)) { g.count = COUNTDOWN; if (mode === 'ready') setMode('play'); }
+      toast('Spieler ' + (peer.i + 1) + ' hat das Spiel verlassen');
+    } else {
+      NET.peers.forEach((p, j) => { p.i = j + 1; netSend(p, { t: 'hello', i: p.i }); });
+      if (NET.pending) NET.pending.i = NET.peers.length + 1;
+      netBroadcast({ t: 'lobby', n: NET.peers.length + 1 });
+      toast('Ein Spieler hat die Verbindung getrennt');
+      if (mode === 'online') renderOnline();
+    }
+  } else if (NET.role === 'guest') {
+    netReset(false);
+    toast('Verbindung zum Gastgeber getrennt');
+    if (mode !== 'result') toMenu();
+  }
+}
+function hostStart(){
+  const n = NET.peers.length + 1;
+  if (n < 2) { toast('Erst muss jemand beitreten'); return; }
+  if (NET.pending) { try { NET.pending.pc.close(); } catch (e) {} NET.pending = null; }
+  const seed = newSeed();
+  for (const p of NET.peers) netSend(p, { t: 'start', seed, n, you: p.i });
+  NET.me = 0;
+  freshGame(n, seed); g.online = true; g.puppet = false;
+  setMode('ready');
+}
+
+/* QR-Code zeichnen und mit der Kamera lesen */
+function drawQR(canvas, text){
+  const q = qrcode(0, 'L'); q.addData(text); q.make();
+  const n = q.getModuleCount(), size = canvas.width, cell = Math.floor(size / (n + 6)), off = Math.floor((size - cell * n) / 2);
+  const c = canvas.getContext('2d');
+  c.fillStyle = '#fff'; c.fillRect(0, 0, size, size); c.fillStyle = '#000';
+  for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) c.fillRect(off + k * cell, off + r * cell, cell, cell);
+}
+let scanStream = null, scanRAF = 0;
+async function openScanner(onCode){
+  await loadLib('jsQR');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('Die Kamera ist hier nicht verfügbar. Nutze den Code als Text.');
+  $('pScan').hidden = false;
+  try { scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }); }
+  catch (e) { closeScanner(); throw new Error('Kein Zugriff auf die Kamera. Erlaube ihn in den Einstellungen oder nutze den Code als Text.'); }
+  const v = $('scanVideo'); v.srcObject = scanStream; v.setAttribute('playsinline', ''); await v.play().catch(() => {});
+  const cvs = document.createElement('canvas'), cx = cvs.getContext('2d', { willReadFrequently: true });
+  const loop = () => {
+    if (!scanStream) return;
+    if (v.videoWidth) {
+      const w = 480, h = Math.round(w * v.videoHeight / v.videoWidth);
+      cvs.width = w; cvs.height = h; cx.drawImage(v, 0, 0, w, h);
+      const r = jsQR(cx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: 'dontInvert' });
+      if (r && r.data && r.data.startsWith('K1~')) { closeScanner(); buzz(30); onCode(r.data); return; }
+    }
+    scanRAF = requestAnimationFrame(loop);
+  };
+  loop();
+}
+function closeScanner(){
+  cancelAnimationFrame(scanRAF);
+  if (scanStream) scanStream.getTracks().forEach(t => t.stop());
+  scanStream = null; $('scanVideo').srcObject = null; $('pScan').hidden = true;
+}
+
+/* Online-Bildschirme */
+let onView = 'choose', onMsg = '';
+function onError(msg){ onMsg = msg; renderOnline('error'); }
+function renderOnline(view){
+  if (view) onView = view;
+  const card = $('onCard'); card.textContent = '';
+  const add = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; card.append(e); return e; };
+  const btn = (label, cls, fn) => { const b = add('button', 'btn ' + (cls || ''), label); b.type = 'button'; b.addEventListener('click', fn); return b; };
+  const qrBox = code => {
+    const cv = add('canvas', 'qr'); cv.width = cv.height = 392;
+    try { drawQR(cv, code); } catch (e) { cv.remove(); }
+    cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'QR-Code zum Scannen');
+    const box = add('div', 'codebox'), cd = document.createElement('code'); cd.textContent = code;
+    const cp = document.createElement('button'); cp.type = 'button'; cp.className = 'btn small'; cp.textContent = 'Kopieren';
+    cp.addEventListener('click', () => {
+      const sel = () => { const r = document.createRange(); r.selectNodeContents(cd); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+      try { navigator.clipboard.writeText(code).then(() => toast('Code kopiert'), () => { sel(); toast('Code markiert – jetzt kopieren'); }); }
+      catch (e) { sel(); toast('Code markiert – jetzt kopieren'); }
+    });
+    box.append(cd, cp);
+  };
+  const pasteBox = (label, fn) => {
+    const ta = add('textarea'); ta.rows = 2; ta.placeholder = label; ta.setAttribute('aria-label', label); ta.spellcheck = false;
+    btn('Code verwenden', 'small', () => { if (ta.value.trim()) fn(ta.value.trim()); });
+  };
+  const scanBtn = (label, fn) => btn(label, 'primary', () => openScanner(fn).catch(e => toast(e.message)));
+
+  if (onView === 'choose') {
+    const h = add('h2', 'title mid'); h.append('Mehrere '); const sp = document.createElement('span'); sp.textContent = 'Handys'; h.append(sp);
+    add('p', 'info', 'Alle Handys sind im selben WLAN oder im Hotspot eines Handys. Einer erstellt das Spiel, die anderen treten bei. Ihr scannt gegenseitig einen QR-Code. Ohne Kamera geht es auch mit dem Code als Text, zum Beispiel per Nachricht.');
+    add('p', 'info small', 'Funktioniert in der installierten App, nicht in der Vorschau auf claude.ai.');
+    btn('Spiel erstellen', 'primary', hostBegin);
+    btn('Beitreten', '', () => renderOnline('join'));
+    btn('Zurück', 'small', () => { netReset(true); setMode('multi'); });
+  } else if (onView === 'host') {
+    add('p', 'sect', 'Spieler im Spiel');
+    const ul = add('ul', 'ranking');
+    const row = (i, txt) => { const li = document.createElement('li'); li.style.setProperty('--c', PCOL[i]);
+      const pl = document.createElement('span'); pl.className = 'pl'; pl.textContent = (i + 1) + '.';
+      const nm = document.createElement('span'); nm.className = 'nm'; const d = document.createElement('i'); nm.append(d, document.createTextNode(txt));
+      li.append(pl, nm, document.createElement('span')); ul.append(li); };
+    row(0, 'Du (Gastgeber)');
+    NET.peers.forEach(p => row(p.i, 'Spieler ' + (p.i + 1) + ' · verbunden'));
+    if (NET.pending && NET.pending.code) {
+      add('p', 'sect', 'Einladung für Spieler ' + (NET.pending.i + 1));
+      qrBox(NET.pending.code);
+      add('p', 'info small', '1. Das andere Handy scannt diesen Code. 2. Dann scannst du den Antwort-Code von dort.');
+      scanBtn('Antwort scannen', code => hostAcceptAnswer(code).catch(e => toast(e.message)));
+      pasteBox('Antwort-Code einfügen', code => hostAcceptAnswer(code).catch(e => toast(e.message)));
+    } else if (NET.peers.length < 3) add('p', 'info small', 'Einladung wird vorbereitet …');
+    const st = btn('Starten · ' + (NET.peers.length + 1) + ' Spieler', NET.peers.length ? 'primary' : '', hostStart);
+    st.disabled = !NET.peers.length;
+    btn('Abbrechen', 'small', () => { netReset(true); renderOnline('choose'); });
+  } else if (onView === 'join') {
+    add('p', 'sect', 'Beitreten');
+    add('p', 'info', 'Scanne den QR-Code auf dem Handy, das das Spiel erstellt hat.');
+    scanBtn('Kamera öffnen', guestJoin);
+    pasteBox('Einladungs-Code einfügen', guestJoin);
+    btn('Zurück', 'small', () => { netReset(true); renderOnline('choose'); });
+  } else if (onView === 'answer') {
+    const peer = NET.guest;
+    if (peer && peer.open) {
+      add('p', 'sect', 'Verbunden');
+      add('p', 'info', 'Du bist Spieler ' + (NET.me + 1) + '. ' + (NET.lobby ? NET.lobby + ' Spieler sind dabei. ' : '') + 'Warte, bis der Gastgeber startet.');
+    } else if (peer) {
+      add('p', 'sect', 'Antwort für den Gastgeber');
+      qrBox(peer.code);
+      add('p', 'info small', 'Der Gastgeber scannt jetzt diesen Code. Danach verbindet ihr euch automatisch.');
+    }
+    btn('Verlassen', 'small', () => { netReset(true); renderOnline('choose'); });
+  } else if (onView === 'busy') add('p', 'info', onMsg || 'Einen Moment …');
+  else if (onView === 'error') { add('p', 'info', onMsg); btn('Zurück', 'primary', () => { netReset(true); renderOnline('choose'); }); }
+}
+async function hostBegin(){
+  if (typeof RTCPeerConnection === 'undefined') return onError('Dieses Gerät oder diese Ansicht kann keine direkte Verbindung aufbauen. Öffne die installierte App.');
+  netReset(true); NET.role = 'host'; NET.me = 0;
+  onMsg = 'Einladung wird vorbereitet …'; renderOnline('busy');
+  try { await loadLib('qrcode'); await hostNewInvite(); renderOnline('host'); }
+  catch (e) { netReset(); onError(e.message || 'Das hat nicht geklappt.'); }
+}
+async function guestJoin(code){
+  if (typeof RTCPeerConnection === 'undefined') return onError('Dieses Gerät oder diese Ansicht kann keine direkte Verbindung aufbauen. Öffne die installierte App.');
+  netReset(true); NET.role = 'guest';
+  onMsg = 'Antwort wird vorbereitet …'; renderOnline('busy');
+  try { await loadLib('qrcode'); await guestAnswer(code); renderOnline('answer'); }
+  catch (e) { netReset(); onError(e.message || 'Das hat nicht geklappt.'); }
+}
+
+/* ---------- Eingaben ---------- */
 stage.addEventListener('pointerdown', e => {
-  if (e.target.closest('button, .card')) return;
+  if (e.target.closest('button, .card, textarea')) return;
   e.preventDefault();
   const r = stage.getBoundingClientRect();
   tap(clamp(Math.floor((e.clientX - r.left) / r.width * g.n), 0, g.n - 1));
 });
 const KEYS = { KeyA: 0, KeyL: 1, KeyV: 2, KeyM: 3 };
 document.addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('textarea, input')) return;
   if (!$('pShop').hidden) { if (e.key === 'Escape') closeShop(); return; }
+  if (!$('pScan').hidden) { if (e.key === 'Escape') closeScanner(); return; }
   const onBtn = e.target.closest && e.target.closest('button');
   if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW' || (e.code in KEYS)) {
     if (onBtn && mode !== 'play' && mode !== 'ready') return;
     e.preventDefault();
-    if (mode === 'over' || mode === 'result') { audioInit(); newRound(); }
+    if (mode === 'over' || (mode === 'result' && NET.role !== 'guest')) { audioInit(); newRound(); }
     else if (mode === 'pause') resume();
     else tap(e.code in KEYS ? KEYS[e.code] : 0);
   } else if (e.code === 'Escape' || e.code === 'KeyP') { mode === 'pause' ? resume() : pause(); }
@@ -1461,8 +1992,10 @@ $('btnPlay').addEventListener('click', () => { audioInit(); if (g.n !== 1) fresh
 $('btnShop').addEventListener('click', openShop);
 $('btnShop2').addEventListener('click', openShop);
 $('shopClose').addEventListener('click', closeShop);
+$('scanCancel').addEventListener('click', closeScanner);
 $('btnMulti').addEventListener('click', () => setMode('multi'));
 $('btnMultiBack').addEventListener('click', () => setMode('menu'));
+$('btnOnline').addEventListener('click', () => { audioInit(); renderOnline('choose'); setMode('online'); });
 for (const b of document.querySelectorAll('.btn.count')) b.addEventListener('click', () => { audioInit(); startMulti(+b.dataset.n); });
 $('btnAgain').addEventListener('click', () => { audioInit(); newRound(); });
 $('btnRematch').addEventListener('click', () => { audioInit(); newRound(); });
@@ -1475,7 +2008,11 @@ $('btnQuit').addEventListener('click', () => {
   for (const p of g.players) { p.shield = false; die(g, p, 'miss', onEv); }
   g.deadT = 1; g.revived = true;
 });
-$('btnSound').addEventListener('click', () => { muted = !muted; store.set('muted', muted); audioInit(); hud(); });
+$('btnSound').addEventListener('click', () => {
+  snd = (snd + 1) % 3; store.set('snd', snd);
+  audioInit(); if (snd !== 0) musicStop(); else musicStart();
+  toast(SND_LABEL[snd]); hud();
+});
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 window.addEventListener('resize', fit);
 
@@ -1494,27 +2031,42 @@ function frame(now){
     if (palK < 1) palK = Math.min(1, palK + rdt / 2);
     if (banner) { banner.t += rdt; if (banner.t > 2.2) banner = null; }
   }
+  if (NET.role === 'host' && g.online && (mode === 'ready' || mode === 'play' || mode === 'dead')) {
+    NET.sendT += rdt;
+    if (NET.sendT >= 1 / 30) { NET.sendT = 0; netBroadcast(snap(g)); }
+  }
   if (g.count > 0) { const c = Math.ceil(g.count / (COUNTDOWN / 3)); if (c !== lastCount) { lastCount = c; sfx.tick(); } }
-  if (mode === 'dead' && g.deadT > 0.9) { if (BOT) newRound(); else if (g.n > 1) showResult(); else showOver(); }
+  if (mode === 'dead' && g.deadT > 0.9) {
+    if (BOT) newRound();
+    else if (g.online) { if (NET.role === 'host') { netBroadcast(snap(g)); netBroadcast({ t: 'end' }); showResult(); } }
+    else if (g.n > 1) showResult(); else showOver();
+  }
   if (BOT && (mode === 'ready' || mode === 'menu')) { if (g.n > 1) g.players.forEach((p, i) => tap(i)); else tap(0); }
   if (mode === 'play') { chips(); if (g.n > 1) mpScores(); }
+  updateCam(g, rdt, mode);
   render(g, skinFor, now, g.n === 1 && !tutDone && P0().hoopsDone === 0 && (mode === 'ready' || mode === 'play') && P0().alive);
   requestAnimationFrame(frame);
 }
 
 /* ---------- Selbsttest (?selftest=1) ---------- */
-function selftest(){
+async function selftest(){
   const out = []; let ok = true;
   const check = (name, cond, info) => { out.push((cond ? 'ok   ' : 'FAIL ') + name + (info ? '  ' + info : '')); if (!cond) ok = false; };
   const nop = () => {};
   const run = (g, sec, input) => { for (let i = 0; i < sec * 120; i++) { if (input) g.players.forEach(p => { if (input(g, p)) flap(g, p, nop); }); step(g, DT, nop); } };
-  const bare = n => { const g = newGame(1, 0, n || 1); g.noSpawn = true; g.hoops = []; g.items = []; g.started = true; g.cur = g.spd; for (const p of g.players) { p.ready = true; p.vy = 0; } return g; };
-  const hoop = (g, x, y, hw, extra) => { const h = Object.assign({ x0: x, x, y0: y, y, hw, amp: 0, w: 0, ph: 0, ax: 0, aw: 0, aph: 0, gold: false, board: false, net: 0, flash: 0, wob: 0, n: 0, ps: Array.from({ length: g.n }, newPS) }, extra || {}); g.hoops.push(h); return h; };
+  const bare = n => { const g = newGame(1, n || 1); g.noSpawn = true; g.hoops = []; g.items = []; g.started = true; g.cur = g.spd; for (const p of g.players) { p.ready = true; p.vy = 0; } return g; };
+  const hoop = (g, x, y, hw, extra) => { const h = Object.assign({ x0: x, x, y0: y, y, hw, amp: 0, w: 0, ph: 0, ax: 0, aw: 0, aph: 0, gold: false, board: false, net: 0, flash: 0, wob: 0, dis: 0, n: g.hoops.length, ps: Array.from({ length: g.n }, newPS) }, extra || {}); g.hoops.push(h); return h; };
   const above = y => (g, p) => p.y > y && p.vy > 0;
 
   let t = bare(), p = t.players[0]; p.y = 220; let h = hoop(t, t.x + 40, 300, 38);
   run(t, 0.45);
   check('Swish mittig durch den Korb', h.ps[0].scored && !h.ps[0].touched && p.score === 2 && p.alive, 'score=' + p.score);
+  run(t, DISSOLVE + 0.05);
+  check('Korb löst sich nach dem Durchfliegen auf', h.dis === 1, 'dis=' + h.dis.toFixed(2));
+
+  t = bare(); p = t.players[0]; p.y = 220; h = hoop(t, t.x + 46 + 38, 300, 38, { dis: 0.5 }); h.ps[0].scored = true;
+  run(t, 0.5);
+  check('Aufgelöster Korb hat keine Kante mehr', p.vy > 700, 'vy=' + p.vy.toFixed(0));
 
   t = bare(); p = t.players[0]; p.y = 220; h = hoop(t, t.x + 46 + 38, 300, 38);
   run(t, 0.5);
@@ -1522,9 +2074,9 @@ function selftest(){
 
   t = bare(); p = t.players[0]; p.y = 200; h = hoop(t, t.x + 60, 450, 36);
   run(t, 1.5, above(200));
-  check('Über den Korb hinweg = verpasst', !p.alive && p.cause === 'miss', 'cause=' + p.cause);
+  check('Über den Korb hinweg = verpasst, verpasster Korb bleibt stehen', !p.alive && p.cause === 'miss' && h.dis === 0, 'cause=' + p.cause);
 
-  t = newGame(3, 0); flap(t, t.players[0], nop); run(t, 2);
+  t = newGame(3, 1); flap(t, t.players[0], nop); run(t, 2);
   check('Boden beendet die Runde', !t.players[0].alive && t.players[0].cause === 'ground', 'cause=' + t.players[0].cause);
 
   t = bare(); p = t.players[0]; const pts = [];
@@ -1535,19 +2087,16 @@ function selftest(){
   t = bare(); p = t.players[0]; scoreHoop(t, p, hoop(t, 0, 0, 30, { gold: true }), nop);
   check('Goldkorb mit Swish bringt 3 Sterne', p.got === 3 && p.golds === 1, 'got=' + p.got);
 
-  t = bare(); p = t.players[0]; p.y = 250; t.items.push({ x: t.x + 30, y: 255, kind: 'star', taken: false, ph: 0 });
+  t = bare(); p = t.players[0]; p.y = 250; t.items.push({ id: 0, x: t.x + 30, y: 255, kind: 'star', taken: false, ph: 0 });
   run(t, 0.3);
   check('Stern wird eingesammelt', p.got === 1, 'got=' + p.got);
 
-  t = bare(); p = t.players[0]; p.y = 250; p.magnet = 5; t.items.push({ x: t.x + 120, y: 150, kind: 'star', taken: false, ph: 0 });
+  t = bare(); p = t.players[0]; p.y = 250; p.magnet = 5; t.items.push({ id: 0, x: t.x + 120, y: 150, kind: 'star', taken: false, ph: 0 });
   run(t, 0.4, above(250));
   check('Magnet zieht Sterne an', p.got === 1, 'got=' + p.got);
 
-  t = bare(); p = t.players[0]; p.y = 100; p.vy = -600; run(t, 0.1);
-  check('Decke hält den Ball im Bild', p.y >= t.ceil - 0.01, 'y=' + p.y.toFixed(1));
-
-  t = newGame(1, 150); p = t.players[0]; flap(t, p, nop); p.vy = -600; p.y = 0; run(t, 0.2, () => true);
-  check('Hoher Bildschirm: Decke liegt höher', p.y < 0 && p.y >= -150 + R - 0.01, 'y=' + p.y.toFixed(1));
+  t = bare(); p = t.players[0]; p.y = 100; p.vy = -600; run(t, 0.5, () => true);
+  check('Decke liegt für alle Bildschirme gleich hoch', newGame(1, 1).ceil === CEIL && p.y < 0 && p.y >= CEIL - 0.01, 'y=' + p.y.toFixed(1));
 
   t = bare(); p = t.players[0]; h = hoop(t, t.x + 30, 330, 34, { board: true });
   const b = boardRect(h); p.y = b.y0 + 20; p.offX = 0; t.x = b.x0 - R - 30; p.vy = -200;
@@ -1564,7 +2113,7 @@ function selftest(){
   t = bare(); t.zeit = 5; let x0 = t.x; run(t, 1, above(250));
   check('Zeitlupe bremst die Welt', Math.abs((t.x - x0) - 0.7 * t.spd) < 6, 'Strecke=' + (t.x - x0).toFixed(0));
 
-  t = newGame(11, 0); p = t.players[0]; flap(t, p, nop); run(t, 3); const deadX = t.x;
+  t = newGame(11, 1); p = t.players[0]; flap(t, p, nop); run(t, 3); const deadX = t.x;
   revive(t);
   const nx = t.hoops.find(h => !h.ps[0].scored);
   const holdOk = p.alive && t.hold && nx && nx.x0 - nx.hw >= t.x + 90 - 1;
@@ -1579,7 +2128,7 @@ function selftest(){
   const act = []; const lr = rng(3); for (let i = 0; i < 3; i++) act.push(newMission(act, {}, lr));
   check('Drei verschiedene Aufträge', new Set(act.map(m => m.t)).size === 3, act.map(m => m.t).join());
 
-  t = newGame(5, 0); let bad = 0, prevX = null; const kinds = { gold: 0, board: 0, slide: 0, move: 0, item: 0 };
+  t = newGame(5, 1); let bad = 0, prevX = null; const kinds = { gold: 0, board: 0, slide: 0, move: 0, item: 0 };
   for (let i = 0; i < 400; i++) spawnHoop(t);
   for (const q of t.hoops) {
     if (q.y0 - q.amp < 150 - 0.01 || q.y0 + q.amp > H - GROUND - 110 + 0.01 || q.hw < 29) bad++;
@@ -1588,10 +2137,23 @@ function selftest(){
     prevX = q.x0; kinds.gold += q.gold; kinds.board += q.board; kinds.slide += !!q.ax; kinds.move += !!q.amp;
   }
   kinds.item = t.items.filter(i => i.kind !== 'star').length;
-  check('Körbe liegen im Spielfeld, Abstände 215–255', bad === 0, 'Fehler=' + bad + ', Gold ' + kinds.gold + ', Brett ' + kinds.board + ', gleitend ' + kinds.slide + ', wandernd ' + kinds.move + ', Extras ' + kinds.item);
+  const idsOk = t.items.every((it, k) => k === 0 || it.id > t.items[k - 1].id);
+  check('Körbe liegen im Spielfeld, Abstände 215–255', bad === 0 && idsOk, 'Fehler=' + bad + ', Gold ' + kinds.gold + ', Brett ' + kinds.board + ', gleitend ' + kinds.slide + ', wandernd ' + kinds.move + ', Extras ' + kinds.item);
 
-  /* Mehrspieler */
-  t = newGame(2, 0, 3);
+  /* Kamera */
+  const gSave = g, viewSave = VIEW_EXTRA;
+  g = newGame(4, 1); VIEW_EXTRA = 0; cam.init = false; g.started = true;
+  g.players[0].y = 400; updateCam(g, 0.016, 'play'); const yLow = cam.y;
+  for (let i = 0; i < 120; i++) { g.players[0].y = 20; updateCam(g, 1 / 60, 'play'); }
+  const followsUp = cam.y < yLow - 100;
+  const ballOnScreen = (20 - cam.y) * cam.z > 60 && (20 - cam.y) * cam.z < H - 60;
+  const topOk = cam.y >= CEIL - 40 - 0.01;
+  VIEW_EXTRA = 400; cam.init = false; updateCam(g, 0.016, 'play'); const tallGround = Math.abs((H + 24 - cam.y) * cam.z - (H + 400)) < 1;
+  g = gSave; VIEW_EXTRA = viewSave; cam.init = false;
+  check('Kamera folgt dem Ball, bleibt im Feld, Boden unten auf hohen Bildschirmen', followsUp && ballOnScreen && topOk && tallGround, 'folgt=' + followsUp + ', im Bild=' + ballOnScreen + ', Rand=' + topOk + ', hoch=' + tallGround);
+
+  /* Mehrspieler an einem Gerät */
+  t = newGame(2, 3);
   const lanesOk = t.players.map(q => q.lane).join() === '-32,0,32' && t.hoops.every(q => q.ps.length === 3);
   readyUp(t, t.players[0]); readyUp(t, t.players[2]); run(t, 0.5);
   const waits = !t.started && t.count === 0;
@@ -1605,7 +2167,9 @@ function selftest(){
 
   t = bare(2); h = hoop(t, t.x + 40, 300, 40); t.players[0].y = 220; t.players[1].y = 120;
   run(t, 0.35);
-  check('Mehrspieler: Treffer zählt je Spieler', h.ps[0].scored && !h.ps[1].scored && t.players[0].score === 2 && t.players[1].score === 0, 'P1=' + t.players[0].score + ', P2=' + t.players[1].score);
+  const perPlayer = h.ps[0].scored && !h.ps[1].scored && t.players[0].score === 2 && t.players[1].score === 0;
+  const stays = h.dis === 0;
+  check('Mehrspieler: Treffer je Spieler, Korb bleibt bis alle durch sind', perPlayer && stays, 'P1=' + t.players[0].score + ', P2=' + t.players[1].score + ', aufgelöst=' + (h.dis > 0));
 
   t = bare(2); t.players[0].y = 450; t.players[1].y = 150;
   run(t, 0.5, (g, q) => q.i === 1 && q.y > 150 && q.vy > 0);
@@ -1620,13 +2184,65 @@ function selftest(){
   const r2 = ranking(t.players), r3 = ranking(t3.players);
   check('Mehrspieler: Rangliste mit Gleichstand', r2[0].place === 1 && r2[1].place === 1 && r3.map(r => (r.p.i + 1) + ':' + r.place).join() === '2:1,3:2,1:3', r3.map(r => (r.p.i + 1) + ':' + r.place).join());
 
-  t = bare(2); t.items.push({ x: t.x + t.players[1].lane + 20, y: 252, kind: 'star', taken: false, ph: 0 }); t.players[0].y = 400; t.players[1].y = 250;
+  t = bare(2); t.items.push({ id: 0, x: t.x + t.players[1].lane + 20, y: 252, kind: 'star', taken: false, ph: 0 }); t.players[0].y = 400; t.players[1].y = 250;
   run(t, 0.25);
   check('Mehrspieler: Stern gibt dem Sammler einen Punkt', t.players[1].score === 1 && t.players[0].score === 0, 'P2=' + t.players[1].score);
 
+  /* Online: Gastgeber rechnet, Gast folgt über Zustand und Ereignisse */
+  const sdp = 'v=0\r\no=- 1 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=application 9 UDP/DTLS/SCTP webrtc-datachannel\r\na=ice-ufrag:Ab3d\r\na=ice-pwd:qwertyuiopasdfghjklzxcvb\r\n'
+    + 'a=fingerprint:sha-256 ' + Array.from({ length: 32 }, (_, k) => (k * 7 + 3).toString(16).padStart(2, '0').toUpperCase()).join(':') + '\r\na=setup:actpass\r\n'
+    + 'a=candidate:1 1 udp 2122260223 192.168.178.23 50123 typ host generation 0\r\na=candidate:2 1 udp 2122260223 4b1d-uuid.local 50124 typ host\r\na=candidate:3 1 tcp 1518280447 192.168.178.23 9 typ host tcptype active\r\n';
+  const code = packDesc({ type: 'offer', sdp }), back = unpackDesc(code);
+  check('Online: Verbindungscode ist kurz und vollständig', code.length < 260 && back.type === 'offer' && back.sdp.includes('a=ice-ufrag:Ab3d') && back.sdp.includes('a=ice-pwd:qwertyuiopasdfghjklzxcvb')
+    && back.sdp.includes('03:0A:11') && back.sdp.includes('192.168.178.23 50123 typ host') && back.sdp.includes('4b1d-uuid.local 50124') && !back.sdp.includes('tcp') && back.sdp.includes('a=setup:actpass'), code.length + ' Zeichen');
+  let codeErr = ''; try { unpackDesc('hallo'); } catch (e) { codeErr = e.message; }
+  check('Online: Falscher Code wird erkannt', codeErr === 'Das ist kein Korbflieger-Code.', codeErr);
+
+  const gH = newGame(77, 2), gG = newGame(77, 2); gH.online = gG.online = true; gG.puppet = true;
+  const queue = [], evH = (type, d) => { if (NET_EV.has(type)) queue.push(JSON.stringify(netEvent(type, d))); };
+  gH.players.forEach(q => readyUp(gH, q));
+  let maxDy = 0;
+  for (let i = 0; i < 120 * 90; i++) {
+    gH.players.forEach(q => { if (gH.started && botWants(gH, q)) { flap(gH, q, evH); if (q.i === 1) flap(gG, gG.players[1], nop); } });
+    step(gH, DT, evH); step(gG, DT, nop);
+    if (i % 4 === 0) {
+      while (queue.length) applyEvent(gG, JSON.parse(queue.shift()), nop);
+      applySnap(gG, JSON.parse(JSON.stringify(snap(gH))), 1);
+      if (gH.started) gH.players.forEach((q, k) => { if (q.alive) maxDy = Math.max(maxDy, Math.abs(q.y - gG.players[k].y)); });
+    }
+    if (!gH.players.some(q => q.alive) && gH.deadT > 0.5) break;
+  }
+  while (queue.length) applyEvent(gG, JSON.parse(queue.shift()), nop);
+  applySnap(gG, JSON.parse(JSON.stringify(snap(gH))), 1);
+  const same = gH.players.every((q, k) => q.score === gG.players[k].score && q.alive === gG.players[k].alive && q.hoopsDone === gG.players[k].hoopsDone);
+  check('Online: Gast zeigt dasselbe Spiel wie der Gastgeber', same && maxDy < 30 && gH.lead > 5, 'Punkte ' + gH.players.map(q => q.score).join('/') + ' vs ' + gG.players.map(q => q.score).join('/') + ', max. Abweichung ' + maxDy.toFixed(1));
+
+  /* wie oben, aber mit 25 ms Verzögerung je Richtung (WLAN) */
+  {
+    const hH = newGame(77, 2), hG = newGame(77, 2); hH.online = hG.online = true; hG.puppet = true;
+    const toGuest = [], toHost = [], ev2 = (type, d) => { if (NET_EV.has(type)) toGuest.push({ at: 0, m: JSON.stringify(netEvent(type, d)) }); };
+    hH.players.forEach(q => readyUp(hH, q));
+    let lagDy = 0;
+    for (let i = 0; i < 120 * 90; i++) {
+      const now = i / 120;
+      if (hH.started && botWants(hH, hH.players[0])) flap(hH, hH.players[0], ev2);
+      if (hG.started && botWants(hG, hG.players[1])) { flap(hG, hG.players[1], nop); toHost.push(now + 0.025); }
+      while (toHost.length && toHost[0] <= now) { toHost.shift(); flap(hH, hH.players[1], ev2); }
+      step(hH, DT, ev2); step(hG, DT, nop);
+      for (const x of toGuest) if (!x.at) x.at = now + 0.025;
+      if (i % 4 === 0) toGuest.push({ at: now + 0.025, m: JSON.stringify(snap(hH)) });
+      while (toGuest.length && toGuest[0].at <= now) { const m = JSON.parse(toGuest.shift().m); if (m.t === 's') applySnap(hG, m, 1); else applyEvent(hG, m, nop); }
+      if (hH.started && i % 4 === 0) hH.players.forEach((q, k) => { if (q.alive && hG.players[k].alive) lagDy = Math.max(lagDy, Math.abs(q.y - hG.players[k].y)); });
+      if (!hH.players.some(q => q.alive) && hH.deadT > 0.5) break;
+    }
+    const sameLag = hH.players.every((q, k) => q.hoopsDone === hG.players[k].hoopsDone && q.score === hG.players[k].score);
+    check('Online mit 25 ms Verzögerung: gleiche Körbe und Punkte, Abweichung < 60', sameLag && lagDy < 60, 'Körbe ' + hH.players.map(q => q.hoopsDone).join('/') + ' vs ' + hG.players.map(q => q.hoopsDone).join('/') + ', max. Abweichung ' + lagDy.toFixed(1));
+  }
+
+  /* Automatische Spieler */
   const res = [];
   for (let s = 1; s <= 12; s++) {
-    const bg = newGame(s * 977, 0); const bp = bg.players[0]; flap(bg, bp, nop);
+    const bg = newGame(s * 977, 1); const bp = bg.players[0]; flap(bg, bp, nop);
     for (let i = 0; i < 180 * 120 && bp.alive; i++) { if (botWants(bg, bp)) flap(bg, bp, nop); step(bg, DT, nop); }
     res.push({ hoops: bp.hoopsDone, score: bp.score, sw: bp.swishes, cause: bp.alive ? 'lebt' : bp.cause });
   }
@@ -1637,12 +2253,34 @@ function selftest(){
 
   const mres = [];
   for (let s = 1; s <= 6; s++) {
-    const mg = newGame(s * 389, 0, 2); mg.players.forEach(q => readyUp(mg, q));
+    const mg = newGame(s * 389, 2); mg.players.forEach(q => readyUp(mg, q));
     for (let i = 0; i < 180 * 120 && mg.players.some(q => q.alive); i++) { mg.players.forEach(q => { if (mg.started && botWants(mg, q)) flap(mg, q, nop); }); step(mg, DT, nop); }
     mres.push(mg.players.map(q => q.hoopsDone).join('/'));
   }
   const mbest = mres.map(r => Math.max(...r.split('/').map(Number))).sort((a, b) => a - b);
   check('Zwei Bots im selben Feld kommen weit (Median bester Spieler ≥ 12 Körbe)', mbest[3] >= 12, 'Körbe P1/P2 je Lauf: ' + mres.join(', '));
+
+  /* Echte Verbindung im selben Browser mit den gekürzten Codes */
+  if (typeof RTCPeerConnection !== 'undefined') {
+    let msg = '', err = '';
+    try {
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('Zeitüberschreitung')), 8000));
+      msg = await Promise.race([timeout, (async () => {
+        const pa = new RTCPeerConnection(RTC_CFG), da = pa.createDataChannel('kf');
+        await pa.setLocalDescription(await pa.createOffer()); await waitIce(pa);
+        const offer = packDesc(pa.localDescription);
+        const pb = new RTCPeerConnection(RTC_CFG);
+        const got = new Promise(res => { pb.ondatachannel = e => { e.channel.onmessage = m => res(m.data); }; });
+        await pb.setRemoteDescription(unpackDesc(offer)); await pb.setLocalDescription(await pb.createAnswer()); await waitIce(pb);
+        const answer = packDesc(pb.localDescription);
+        await pa.setRemoteDescription(unpackDesc(answer));
+        await new Promise(res => { if (da.readyState === 'open') res(); else da.onopen = res; });
+        da.send('hallo'); const r = await got; pa.close(); pb.close();
+        return r + ' (' + offer.length + '/' + answer.length + ' Zeichen)';
+      })()]);
+    } catch (e) { err = e.message; }
+    check('Online: echte Verbindung mit gekürzten Codes', msg.startsWith('hallo'), msg || err);
+  } else out.push('info Keine WebRTC-Verbindung in dieser Umgebung');
 
   document.title = (ok ? 'SELFTEST OK' : 'SELFTEST FAIL') + ' | ' + out.filter(l => l.startsWith('FAIL')).join(' ; ');
   const pre = document.createElement('pre'); pre.id = 'testout'; pre.textContent = out.join('\n'); stage.append(pre);
@@ -1650,13 +2288,13 @@ function selftest(){
 
 /* ---------- Start ---------- */
 fit();
-g.ceil = R - VIEW_EXTRA;
 setMode('menu');
 if (SELFTEST) {
   window.onerror = (m, s, l) => { document.title = 'SELFTEST ERROR ' + m + ' @' + l; };
-  window.__kf = { newGame, step, flap, readyUp, botWants, spawnHoop, scoreHoop, revive, DT, GRAV,
-    show(gg, m){ g = gg; lastScore = -1; mpKey = ''; setMode(m || 'pause'); if (!m) $('pPause').hidden = true; hud(); } };
-  try { selftest(); } catch (e) { document.title = 'SELFTEST ERROR ' + e.message + ' ' + (e.stack || '').split('\n')[1]; }
+  window.__kf = { newGame, step, flap, readyUp, botWants, spawnHoop, scoreHoop, revive, DT, GRAV, cam, snap, applySnap, applyEvent, netEvent, NET_EV,
+    show(gg, m){ g = gg; lastScore = -1; mpKey = ''; cam.init = false; setMode(m || 'pause'); if (!m) $('pPause').hidden = true; hud(); } };
+  document.title = 'SELFTEST läuft';
+  selftest().catch(e => { document.title = 'SELFTEST ERROR ' + e.message + ' ' + (e.stack || '').split('\n')[1]; });
 }
 if (document.fonts && document.fonts.load) document.fonts.load('26px Bungee').catch(() => {});
 requestAnimationFrame(t => { last = t; frame(t); });
