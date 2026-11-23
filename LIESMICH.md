@@ -23,4 +23,5 @@ Eigenes Korbspiel nach dem Spielprinzip von Flappy Dunk (Mechanik nachgebaut, Na
   - Edge headless `--dump-dom` liefert auf diesem Laptop keine Ausgabe, darum der Weg über den Server.
 - **Spielwerte** oben im Skript: `GRAV`, `FLAP`, `ZONE_EVERY`, `REVIVE_COST`, `PW_TIME`; Körbe in `spawnHoop`, Punkte in `scoreHoop`.
 - **Speicher:** `localStorage` mit Schlüsseln `korbflieger.*` (best, stars, owned, skin, muted, missions, mlevels, totals, tut), je Gerät und Adresse getrennt.
-- **Veröffentlichung:** bisher nur als privates claude.ai-Artefakt. Für die Installation als App auf dem iPhone (wie Himmelhüpfer) bräuchte es ein GitHub-Repo mit Pages.
+- **Veröffentlichung:** öffentliches Repo `BWieBenny/korbflieger`, GitHub Pages aus `main`: https://bwiebenny.github.io/korbflieger/ . Nur Pushes auf `main` erreichen das iPhone (Ablauf: Quelle ändern → `bash build.sh` → Commit → Push; Artefakt mit derselben Quelle neu veröffentlichen). Vor dem Push nichts Privates einchecken.
+- **Installation iPhone:** Adresse in Safari öffnen → Teilen → „Zum Home-Bildschirm“. Dann randlos und offline.
