@@ -23,7 +23,7 @@ Eigenes Korbspiel nach dem Spielprinzip von Flappy Dunk (Mechanik nachgebaut, Na
 - **Bildformat:** Bühne zwischen 3:5 und 9:20; auf hohen Bildschirmen wächst der Himmel nach oben (`VIEW_EXTRA`), Spielfeld unten bleibt gleich.
 - **Icons:** `bash icons.sh` rendert `icon.html` mit Edge headless (Edge braucht teils ein paar Sekunden; fehlen PNGs, Skript nochmal starten).
 - **Test:** `powershell -File tools\serve.ps1` startet einen Server auf http://127.0.0.1:8765/ (in der App: Vorschau „korbflieger“).
-  - `index.html?selftest=1` – 27 Prüfungen (Physik, Punkte, Brett, Schild, Magnet, Zeitlupe, zweite Chance, Aufträge, Korb-Erzeugung, Mehrspieler) plus automatischer Spieler über 12 Läufe und zwei Bots im selben Feld über 6 Läufe; Ergebnis im Seitentitel (`SELFTEST OK`).
+  - `index.html?selftest=1` – 26 Prüfungen (Physik, Punkte, Brett, Schild, Magnet, Zeitlupe, zweite Chance, Aufträge, Korb-Erzeugung, Mehrspieler) plus automatischer Spieler über 12 Läufe und zwei Bots im selben Feld über 6 Läufe; Ergebnis im Seitentitel (`SELFTEST OK`).
     Im Testmodus gibt es `window.__kf` (u. a. `show(g)`, um einen vorgespulten Spielstand anzuzeigen).
   - `index.html?bot=1` – der automatische Spieler spielt sichtbar endlos (im verborgenen Browserbereich sehr langsam).
   - Edge headless `--dump-dom` liefert auf diesem Laptop keine Ausgabe, darum der Weg über den Server.
