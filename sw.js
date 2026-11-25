@@ -1,5 +1,5 @@
 /* Korbflieger – Service Worker: Seite zuerst aus dem Netz (Updates sofort), sonst aus dem Speicher; übrige Dateien aus dem Speicher */
-const CACHE='korbflieger-20261123-215544';
+const CACHE='korbflieger-20261125-190813';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));

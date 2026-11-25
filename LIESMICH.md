@@ -14,8 +14,9 @@ Eigenes Korbspiel nach dem Spielprinzip von Flappy Dunk (Mechanik nachgebaut, Na
 - Vier Himmelszonen (alle 30 Punkte), sechs Bälle (Sterne), Rüttel-Feedback nur auf Android (iOS kann das im Browser nicht).
 - Ton: Knopf schaltet Musik und Effekte → nur Effekte → aus (`snd`). Musik wird im Browser erzeugt (Am–F–C–G), Tempo steigt mit der Geschwindigkeit.
 
-**Kamera** (`camTarget`, `updateCam`, nur Darstellung): Zoom 1,1 im Einzelspiel, folgt dem Ball weich in der Höhe und schaut zum nächsten Korb voraus
-(62 % Ball, 38 % Korb), Zoom-Ruck bei Swish, Zoom auf den Ball beim Absturz; im Mehrspieler Zoom 1,0 und weiter heraus, wenn die Bälle auseinander sind.
+**Kamera** (`updateCam`, nur Darstellung): verschiebt den Ball nie von sich aus. Waagerecht fest (Spalte `BALLX` bei 32 % der Breite, Abprallen sichtbar),
+Zoom wird um den Ball angewendet, senkrecht Totbereich `CAM_BAND` (28–66 % der Höhe): Kamera steht, bis ein Ball das Band verlässt, und rückt dann genau mit ihm nach.
+Zoom 1,1 im Einzelspiel, Zoom-Ruck bei Swish, Zoom auf den Ball beim Absturz; im Mehrspieler Zoom 1,0 und weiter heraus, wenn die Bälle auseinander sind.
 Grenzen: oben `CEIL − 40`, unten Boden; auf hohen Bildschirmen liegt der Boden unten. Hintergrund in Tiefen-Ebenen (`layer(c, p)`: Himmel 0, Sterne 0,06,
 Sonne 0,15, Häuser 0,35/0,65, Welt 1). Menü und Mehrspieler-Auswahl zeigen das ruhige Gesamtbild. Die Decke (`CEIL` = −16) ist für alle Bildschirme gleich.
 
@@ -43,7 +44,7 @@ Magnet und Schild nur für den Sammler. Keine Aufträge, kein Rekord, keine Ster
 - **Bildformat:** Bühne zwischen 3:5 und 9:20; Pixeldichte höchstens 2 (spart Akku). `VIEW_EXTRA` beeinflusst nur die Darstellung, nicht die Simulation.
 - **Icons:** `bash icons.sh` rendert `icon.html` mit Edge headless (Edge braucht teils ein paar Sekunden; fehlen PNGs, Skript nochmal starten).
 - **Test:** `powershell -File tools\serve.ps1` startet einen Server auf http://127.0.0.1:8765/ (in der App: Vorschau „korbflieger“).
-  - `index.html?selftest=1` – 33 Prüfungen: Physik, Punkte, Auflösen, Brett, Schild, Magnet, Zeitlupe, zweite Chance, Aufträge, Korb-Erzeugung, Kamera,
+  - `index.html?selftest=1` – 34 Prüfungen: Physik, Punkte, Auflösen, Brett, Schild, Magnet, Zeitlupe, zweite Chance, Aufträge, Korb-Erzeugung, Kamera (auch: verschiebt den Ball nicht),
     Mehrspieler, Online (Code-Kürzung, Abgleich ohne und mit 25 ms Verzögerung, echte WebRTC-Verbindung im selben Browser), automatischer Spieler über 12 Läufe,
     zwei Bots im selben Feld über 6 Läufe; Ergebnis im Seitentitel (`SELFTEST OK`, vorher `SELFTEST läuft`).
     Im Testmodus gibt es `window.__kf` (u. a. `show(g, mode)`, um einen vorgespulten Spielstand anzuzeigen).

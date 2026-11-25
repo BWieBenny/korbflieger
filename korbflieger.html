@@ -962,37 +962,56 @@ function skyline(c, off, col, salt, minH, maxH, segW, win){
 }
 
 /* ---------- Kamera ---------- */
-const cam = { x: 0, y: 0, z: 1, punch: 0, init: false };
-function camTarget(g, mode){
-  const screenH = H + VIEW_EXTRA;
-  if (mode === 'menu' || mode === 'multi' || mode === 'online') return { x: 0, y: -VIEW_EXTRA, z: 1 };   // ruhiges Gesamtbild
-  const alive = g.players.filter(p => p.alive), focus = alive.length ? alive : g.players;
-  let fy = 0, fo = 0, minY = 1e9, maxY = -1e9;
-  for (const p of focus) { fy += p.y; fo += p.offX + p.lane; minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y); }
-  fy /= focus.length; fo /= focus.length;
+const cam = { x: 0, y: 0, z: 1, base: 1, punch: 0, init: false };
+/* Im Spiel bewegt die Kamera die Bälle auf dem Bildschirm nie von sich aus:
+   - waagerecht fest: Spalte BALLX steht immer bei 32 % der Breite (auch beim Zoomen), Ausweichen/Abprallen sieht man unverfälscht;
+   - Zoom wird um den Ball herum angewendet (der Ball bleibt am selben Bildschirmpunkt);
+   - senkrecht nur ein Totbereich: Die Kamera steht still, solange alle Bälle im Band (28–66 % der Höhe) sind,
+     und rückt erst nach, wenn ein Ball das Band verlässt – dann genau mit dem Ball, ohne Nachlauf. Keine Vorschau, die die Kamera verschiebt. */
+const CAM_BAND = [0.28, 0.66];
+function camZoom(g, focus, alive){
+  let minY = 1e9, maxY = -1e9;
+  for (const p of focus) { minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y); }
   let z = g.n > 1 ? clamp(1.02 - Math.max(0, maxY - minY - 140) / 800, 0.82, 1.02) : 1.1;
   if (g.n === 1 && g.started && !alive.length && !reduceMotion) z += 0.2 * clamp(g.deadT / 0.5, 0, 1);
-  z += cam.punch;
-  let ty = fy;
-  if (g.started && alive.length) {   // Vorschau auf den nächsten Korb
-    const bx = g.x + fo;
-    const nh = g.hoops.find(h => h.dis === 0 && h.x > bx - 10 && h.x < bx + 280 && !hoopDone(g, h));
-    if (nh) ty = fy * 0.62 + nh.y * 0.38;
-  }
-  const VW = W / z, VH = screenH / z;
-  const x = BALLX + fo * 0.5 - VW * 0.32;
-  const top = CEIL - 40, bottom = H + 24 - VH;
-  const y = bottom <= top ? bottom : clamp(ty - VH * 0.5, top, bottom);
-  return { x, y, z };
+  return z;
+}
+function camTarget(g, mode){   // nur für Menü-Ansichten
+  return { x: 0, y: -VIEW_EXTRA, z: 1 };
 }
 function updateCam(g, rdt, mode){
-  const T = camTarget(g, mode);
-  if (!cam.init) { cam.x = T.x; cam.y = T.y; cam.z = T.z; cam.init = true; return; }
-  const k = 1 - Math.exp(-rdt * 4.5), kz = 1 - Math.exp(-rdt * 3.2);
-  cam.z += (T.z - cam.z) * kz;
-  cam.x += (T.x - cam.x) * k;
-  cam.y += (T.y - cam.y) * k;
-  cam.punch = Math.max(0, cam.punch - rdt * 0.14);
+  const screenH = H + VIEW_EXTRA;
+  if (mode === 'menu' || mode === 'multi' || mode === 'online') {   // ruhiges Gesamtbild
+    const T = camTarget(g, mode);
+    if (!cam.init) { cam.x = T.x; cam.y = T.y; cam.z = T.z; cam.base = T.z; cam.init = true; return; }
+    const k = 1 - Math.exp(-rdt * 4.5);
+    cam.z += (T.z - cam.z) * k; cam.base = cam.z; cam.x += (T.x - cam.x) * k; cam.y += (T.y - cam.y) * k;
+    return;
+  }
+  const alive = g.players.filter(p => p.alive), focus = alive.length ? alive : g.players;
+  let fy = 0, minY = 1e9, maxY = -1e9;
+  for (const p of focus) { fy += p.y; minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y); }
+  fy /= focus.length;
+  const zT = camZoom(g, focus, alive);
+  const fresh = !cam.init;
+  const zOld = cam.z;
+  if (fresh) { cam.base = zT; cam.punch = 0; }
+  else cam.base += (zT - cam.base) * (1 - Math.exp(-rdt * 3.2));
+  cam.punch = fresh ? 0 : Math.max(0, cam.punch - rdt * 0.14);
+  const z = cam.base + cam.punch;
+  // Zoom um den Ball: Bildschirmhöhe des Balls bleibt gleich
+  let y = fresh ? fy - screenH * 0.47 / z : fy - (fy - cam.y) * zOld / z;
+  // Totbereich: nur nachrücken, wenn ein Ball das Band verlässt
+  const a = screenH * CAM_BAND[0], b = screenH * CAM_BAND[1];
+  const sMin = (minY - y) * z, sMax = (maxY - y) * z;
+  if (sMin < a && sMax > b) y = (minY + maxY) / 2 - (a + b) / 2 / z;
+  else if (sMin < a) y = minY - a / z;
+  else if (sMax > b) y = maxY - b / z;
+  const top = CEIL - 40, bottom = H + 24 - screenH / z;
+  y = bottom <= top ? bottom : clamp(y, top, bottom);
+  cam.z = z; cam.y = y;
+  cam.x = BALLX - (W / z) * 0.32;
+  cam.init = true;
 }
 /* Ebene mit Tiefe p: 0 = fest am Bildschirm, 1 = Spielwelt mit voller Kamerabewegung */
 function layer(c, p, sx, sy){
@@ -2121,8 +2140,18 @@ async function selftest(){
   const ballOnScreen = (20 - cam.y) * cam.z > 60 && (20 - cam.y) * cam.z < H - 60;
   const topOk = cam.y >= CEIL - 40 - 0.01;
   VIEW_EXTRA = 400; cam.init = false; updateCam(g, 0.016, 'play'); const tallGround = Math.abs((H + 24 - cam.y) * cam.z - (H + 400)) < 1;
+  // Kamera schiebt den Ball nicht: im Band, beim Zoom-Ruck, beim Abprallen und beim Vorrücken der Welt bleibt der Ball dort, wo seine Physik ihn hinsetzt
+  VIEW_EXTRA = 0; g = newGame(4, 1); g.started = true; cam.init = false;
+  const P0 = g.players[0]; P0.y = 300; updateCam(g, 1 / 60, 'play');
+  const scr = () => [(BALLX + P0.offX - cam.x) * cam.z, (P0.y - cam.y) * cam.z];
+  const c0 = scr(); let still = true;
+  for (let i = 0; i < 90; i++) { g.x += 3; updateCam(g, 1 / 60, 'play'); const s = scr(); if (Math.abs(s[0] - c0[0]) > 0.01 || Math.abs(s[1] - c0[1]) > 0.01) still = false; }
+  const yBand = cam.y; P0.y = 330; updateCam(g, 1 / 60, 'play'); const bandOk = cam.y === yBand;
+  const c1 = scr(); cam.punch = 0.07; updateCam(g, 1 / 60, "play"); const c2 = scr(); const punchOk = Math.abs(c2[0] - c1[0]) < 0.01 && Math.abs(c2[1] - c1[1]) < 0.01;
+  P0.offX = -25; updateCam(g, 1 / 60, 'play'); const offOk = Math.abs((BALLX - cam.x) * cam.z - 0.32 * W) < 0.01;
   g = gSave; VIEW_EXTRA = viewSave; cam.init = false;
   check('Kamera folgt dem Ball, bleibt im Feld, Boden unten auf hohen Bildschirmen', followsUp && ballOnScreen && topOk && tallGround, 'folgt=' + followsUp + ', im Bild=' + ballOnScreen + ', Rand=' + topOk + ', hoch=' + tallGround);
+  check('Kamera verschiebt den Ball nicht (Totbereich, Zoom um den Ball, Abprallen sichtbar)', still && bandOk && punchOk && offOk, 'ruhig=' + still + ', Band=' + bandOk + ', Zoom=' + punchOk + ', waagerecht=' + offOk);
 
   /* Mehrspieler an einem Gerät */
   t = newGame(2, 3);
